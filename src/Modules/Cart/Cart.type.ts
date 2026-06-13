@@ -25,7 +25,7 @@ export const CartType = gql`
   }
 
   extend type Query {
-    getAllCarts: [Cart]
+    getAllCarts(search: String): [Cart]
     getCartByUserId(userId: ID!): Cart
   }
 

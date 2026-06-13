@@ -27,8 +27,17 @@ const populateCartItems = async (items: any[]) => {
 
 export const CartService = {
 
-    async getAllCarts() {
-        const carts = await cartModel.find();
+    async getAllCarts(search?: string) {
+        let filter = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { userId: { $regex: regex } }
+                ]
+            };
+        }
+        const carts = await cartModel.find(filter);
         return Promise.all(carts.map(async cart => ({
             id: cart._id,
             userId: cart.userId,

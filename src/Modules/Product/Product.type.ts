@@ -22,7 +22,7 @@ export const ProductType = gql`
     productDiscount: Float
     productSize: Float!
     productGender: String!
-    productPrice: Float!
+    productPrice: Float
     productStock: Float!
     productCategory: String!
   }
@@ -40,7 +40,7 @@ export const ProductType = gql`
   }
 
   type Query {
-    getAllProducts: [Product]
+    getAllProducts(search: String): [Product]
     getProductById(id: ID!): Product
   }
 

@@ -3,7 +3,7 @@ import { CartService } from "./Cart.services.js";
 export const CartResolver = {
     Query: {
         getAllCarts: async (_: any, __: any, context: any) => {
-            return CartService.getAllCarts();
+            return CartService.getAllCarts(__.search);
         },
         getCartByUserId: async (_: any, __: any, context: any) => {
             return CartService.getCartByUserId(__.userId);
