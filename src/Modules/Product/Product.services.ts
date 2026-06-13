@@ -1,8 +1,18 @@
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 export const ProductService = {
-    async getAllProducts() {
-        const products = await productModel.find();
+    async getAllProducts(search?: string) {
+        let filter = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { productName: { $regex: regex } },
+                    { productCategory: { $regex: regex } }
+                ]
+            };
+        }
+        const products = await productModel.find(filter);
         return products.map((product) => ({
             id: product._id,
             productName: product.productName,
@@ -39,6 +49,10 @@ export const ProductService = {
     },
 
     async createProduct(input: any) {
+        if (input.productMrp) {
+            const discount = input.productDiscount || 0;
+            input.productPrice = input.productMrp - (input.productMrp * (discount / 100));
+        }
         const newProduct = await productModel.create(input);
         return {
             id: newProduct._id,
@@ -56,6 +70,14 @@ export const ProductService = {
     },
 
     async updateProduct(id: string, input: any) {
+        if (input.productMrp !== undefined || input.productDiscount !== undefined) {
+            const product = await productModel.findById(id);
+            if (product) {
+                const mrp = input.productMrp !== undefined ? input.productMrp : product.productMrp;
+                const discount = input.productDiscount !== undefined ? input.productDiscount : product.productDiscount;
+                input.productPrice = mrp - (mrp * (discount / 100));
+            }
+        }
         const updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedProduct) {
             throw new Error("Product not found");

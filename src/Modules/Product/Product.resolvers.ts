@@ -3,7 +3,7 @@ import { ProductService } from "./Product.services.js";
 export const ProductResolver = {
     Query: {
         getAllProducts: async (_: any, __: any, context: any) => {
-            return ProductService.getAllProducts();
+            return ProductService.getAllProducts(__.search);
         },
         getProductById: async (_: any, __: any, context: any) => {
             return ProductService.getProductById(__.id);
