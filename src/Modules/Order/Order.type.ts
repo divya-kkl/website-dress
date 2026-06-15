@@ -11,15 +11,43 @@ export const OrderType = gql`
     size: String!
   }
 
+  type DeliveryAddress {
+    addressType: String!
+    name: String!
+    street: String!
+    city: String!
+    state: String!
+    country: String!
+    zipCode: String!
+    phone: String!
+  }
+
+  type DeliveryPartner {
+    name: String!
+    trackingId: String!
+    contactNumber: String!
+  }
+
   type Order {
     id: ID!
     userId: ID!
-    shopId: ID!
-    orderItems: [OrderItem]!
+    shopDetails: ShopUser
     orderNumber: String!
+    items: [OrderItem!]!
     subTotal: Float!
-    createdAt: String
-    updatedAt: String
+    deliveryCharge: Float!
+    totalAmount: Float!
+    status: String!
+    paymentStatus: String!
+    paymentMethod: String!
+    deliveryAddress: DeliveryAddress!
+    notes: String
+    image: String
+    couponCode: String
+    isCouponApplied: Boolean!
+    deliveryPartner: DeliveryPartner
+    createdAt: String!
+    updatedAt: String!
   }
 
   input OrderItemInput {
@@ -32,12 +60,40 @@ export const OrderType = gql`
     size: String!
   }
 
-  input CreateOrderInput {
+  input DeliveryAddressInput {
+    addressType: String!
+    name: String!
+    street: String!
+    city: String!
+    state: String!
+    country: String!
+    zipCode: String!
+    phone: String!
+  }
+
+  input DeliveryPartnerInput {
+    name: String!
+    trackingId: String!
+    contactNumber: String!
+  }
+
+  input PlaceOrderInput {
     userId: ID!
-    shopId: ID!
-    orderItems: [OrderItemInput]!
+    shopDetails: ID
     orderNumber: String!
+    items: [OrderItemInput!]!
     subTotal: Float!
+    deliveryCharge: Float!
+    totalAmount: Float!
+    status: String
+    paymentStatus: String
+    paymentMethod: String!
+    deliveryAddress: DeliveryAddressInput!
+    notes: String
+    image: String
+    couponCode: String
+    isCouponApplied: Boolean
+    deliveryPartner: DeliveryPartnerInput
   }
 
   type Query {
@@ -46,7 +102,7 @@ export const OrderType = gql`
   }
 
   type Mutation {
-    createOrder(input: CreateOrderInput): Order!
+    placeOrder(input: PlaceOrderInput!): Order!
     deleteOrder(id: ID!): String!
   }
 `;

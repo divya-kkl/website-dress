@@ -4,6 +4,7 @@ import { ShopUserType } from "../Modules/ShopUser/ShopUser.type.js";
 import { CartType } from "../Modules/Cart/Cart.type.js";
 import { OrderType } from "../Modules/Order/Order.type.js";
 import { ProductCategoryType } from "../Modules/ProductCategories/ProductCategories.type.js";
+import { CouponType } from "../Modules/Coupon/Coupon.type.js";
 
 export const typeDefs = [
     UserType,
@@ -11,5 +12,6 @@ export const typeDefs = [
     ShopUserType,
     CartType,
     OrderType,
-    ProductCategoryType
+    ProductCategoryType,
+    CouponType
 ];
