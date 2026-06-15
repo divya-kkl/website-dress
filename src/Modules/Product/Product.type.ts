@@ -1,42 +1,52 @@
 import { gql } from "apollo-server-express";
 
 export const ProductType = gql`
+  type Variant {
+    color: String!
+    size: String!
+    stock: Float!
+  }
+
   type Product {
     id: ID!
-    productName: String!
-    productImage: String!
-    productMrp: Float!
-    productDiscount: Float
-    productSize: Float!
-    productGender: String!
-    productPrice: Float!
-    productStock: Float!
-    productCategory: String!
+    name: String!
+    price: Float!
+    mrp: Float!
+    discountPercentage: Float
+    images: [String]!
+    brand: String!
+    productCategoriesID: String!
+    variants: [Variant]!
     createdAt: String
+    updatedAt: String
+  }
+
+  input VariantInput {
+    color: String!
+    size: String!
+    stock: Float!
   }
 
   input CreateProductInput {
-    productName: String!
-    productImage: String!
-    productMrp: Float!
-    productDiscount: Float
-    productSize: Float!
-    productGender: String!
-    productPrice: Float
-    productStock: Float!
-    productCategory: String!
+    name: String!
+    price: Float!
+    mrp: Float!
+    discountPercentage: Float
+    images: [String]!
+    brand: String!
+    productCategoriesID: String!
+    variants: [VariantInput]!
   }
 
   input UpdateProductInput {
-    productName: String
-    productImage: String
-    productMrp: Float
-    productDiscount: Float
-    productSize: Float
-    productGender: String
-    productPrice: Float
-    productStock: Float
-    productCategory: String
+    name: String
+    price: Float
+    mrp: Float
+    discountPercentage: Float
+    images: [String]
+    brand: String
+    productCategoriesID: String
+    variants: [VariantInput]
   }
 
   type Query {

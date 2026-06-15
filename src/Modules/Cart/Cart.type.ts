@@ -1,25 +1,24 @@
 import { gql } from "apollo-server-express";
 
 export const CartType = gql`
-  type CartItem {
+  type CartProduct {
     productId: String!
     productName: String!
     productImage: String!
-    productMrp: Float!
-    productDiscount: Float
-    productSize: Float!
-    productGender: String!
-    productPrice: Float!
-    productStock: Float!
-    productCategory: String!
     quantity: Float!
-    subtotal: Float!
+    price: Float!
+    mrp: Float!
+    totalPrice: Float!
   }
 
   type Cart {
     id: ID!
     userId: String!
-    items: [CartItem]
+    shopId: String!
+    products: [CartProduct]
+    totalQuantity: Float!
+    subTotal: Float!
+    status: String!
     createdAt: String
     updatedAt: String
   }
@@ -30,7 +29,7 @@ export const CartType = gql`
   }
 
   extend type Mutation {
-    addToCart(userId: ID!, productId: ID!, quantity: Float!): Cart!
+    addToCart(userId: ID!, shopId: ID!, productId: ID!, quantity: Float!): Cart!
     removeFromCart(userId: ID!, productId: ID!): Cart!
     clearCart(userId: ID!): String!
   }
