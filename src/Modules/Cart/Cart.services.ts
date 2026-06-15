@@ -2,27 +2,43 @@ import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 const populateCartItems = async (items: any[]) => {
-    const populated = [];
+    const products = [];
+    let totalQuantity = 0;
+    let subTotal = 0;
+
     for (let item of items) {
         const product = await productModel.findById(item.productId);
         if (product) {
-            populated.push({
+            const totalPrice = product.price * item.quantity;
+            products.push({
                 productId: item.productId,
-                productName: product.productName,
-                productImage: product.productImage,
-                productMrp: product.productMrp,
-                productDiscount: product.productDiscount,
-                productSize: product.productSize,
-                productGender: product.productGender,
-                productPrice: product.productPrice,
-                productStock: product.productStock,
-                productCategory: product.productCategory,
+                productName: product.name,
+                productImage: product.images?.[0] || "",
                 quantity: item.quantity,
-                subtotal: product.productPrice * item.quantity
+                price: product.price,
+                mrp: product.mrp,
+                totalPrice: totalPrice
             });
+            totalQuantity += item.quantity;
+            subTotal += totalPrice;
         }
     }
-    return populated;
+    return { products, totalQuantity, subTotal };
+};
+
+const formatCart = async (cart: any) => {
+    const populated = await populateCartItems(cart.products);
+    return {
+        id: cart._id,
+        userId: cart.userId,
+        shopId: cart.shopId,
+        products: populated.products,
+        totalQuantity: populated.totalQuantity,
+        subTotal: populated.subTotal,
+        status: cart.status,
+        createdAt: cart.createdAt?.toString(),
+        updatedAt: cart.updatedAt?.toString()
+    };
 };
 
 export const CartService = {
@@ -33,57 +49,42 @@ export const CartService = {
             const regex = new RegExp(search, 'i');
             filter = {
                 $or: [
-                    { userId: { $regex: regex } }
+                    { userId: { $regex: regex } },
+                    { shopId: { $regex: regex } }
                 ]
             };
         }
         const carts = await cartModel.find(filter);
-        return Promise.all(carts.map(async cart => ({
-            id: cart._id,
-            userId: cart.userId,
-            items: await populateCartItems(cart.items),
-            createdAt: cart.createdAt?.toString(),
-            updatedAt: cart.updatedAt?.toString()
-        })));
+        return Promise.all(carts.map(cart => formatCart(cart)));
     },
 
     async getCartByUserId(userId: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
-            cart = await cartModel.create({ userId, items: [] });
+            cart = await cartModel.create({ userId, shopId: "default", products: [], status: "ACTIVE" });
         }
-        return {
-            id: cart._id,
-            userId: cart.userId,
-            items: await populateCartItems(cart.items),
-            createdAt: cart.createdAt?.toString(),
-            updatedAt: cart.updatedAt?.toString()
-        };
+        return formatCart(cart);
     },
 
-    async addToCart(userId: string, productId: string, quantity: number) {
+    async addToCart(userId: string, shopId: string, productId: string, quantity: number) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
-            cart = await cartModel.create({ userId, items: [] });
+            cart = await cartModel.create({ userId, shopId, products: [], status: "ACTIVE" });
+        } else if (shopId && cart.shopId !== shopId) {
+            cart.shopId = shopId;
         }
 
-        const existingItemIndex = cart.items.findIndex(item => item.productId === productId);
+        const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId);
         
         if (existingItemIndex > -1) {
-            cart.items[existingItemIndex]!.quantity += quantity;
+            cart.products[existingItemIndex]!.quantity += quantity;
         } else {
-            cart.items.push({ productId, quantity });
+            cart.products.push({ productId, quantity });
         }
 
         await cart.save();
 
-        return {
-            id: cart._id,
-            userId: cart.userId,
-            items: await populateCartItems(cart.items),
-            createdAt: cart.createdAt?.toString(),
-            updatedAt: cart.updatedAt?.toString()
-        };
+        return formatCart(cart);
     },
 
     async removeFromCart(userId: string, productId: string) {
@@ -92,16 +93,10 @@ export const CartService = {
             throw new Error("Cart not found");
         }
 
-        cart.items = cart.items.filter(item => item.productId !== productId);
+        cart.products = cart.products.filter((item: any) => item.productId !== productId);
         await cart.save();
 
-        return {
-            id: cart._id,
-            userId: cart.userId,
-            items: await populateCartItems(cart.items),
-            createdAt: cart.createdAt?.toString(),
-            updatedAt: cart.updatedAt?.toString()
-        };
+        return formatCart(cart);
     },
 
     async clearCart(userId: string) {
@@ -109,7 +104,7 @@ export const CartService = {
         if (!cart) {
             throw new Error("Cart not found");
         }
-        cart.items = [];
+        cart.products = [];
         await cart.save();
         return "Cart cleared successfully";
     }

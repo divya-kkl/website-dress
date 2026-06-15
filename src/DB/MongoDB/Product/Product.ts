@@ -1,59 +1,72 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IProduct extends Document {
-    productName: string,
-    productImage: string,
-    productMrp: number,
-    productDiscount: number,
-    productSize: number,
-    productGender: string,
-    productPrice: number,
-    productStock: number,
-    productCategory: string,
-    createdAt?: Date,
+export interface IVariant {
+    color: string;
+    size: string;
+    stock: number;
 }
 
-const ProductSchema = new Schema<IProduct>({
-    productName: {
-        type: String,
-        required: true
+export interface IProduct extends Document {
+    name: string;
+    price: number;
+    mrp: number;
+    discountPercentage: number;
+    images: string[];
+    brand: string;
+    productCategoriesID: mongoose.Types.ObjectId | string;
+    variants: IVariant[];
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+const VariantSchema: Schema = new Schema({
+    color: { 
+        type: String, 
+        required: true 
     },
-    productImage: {
-        type: String,
-        required: true
+    size: 
+    { 
+        type: String, 
+        required: true 
     },
-    productMrp: {
-        type: Number,
-        required: true
-    },
-    productDiscount: {
-        type: Number,
-        default: 0
-    },
-    productSize: {
-        type: Number,
-        required: true
-    },
-    productGender: {
-        type: String,
-        required: true
-    },
-    productPrice: {
-        type: Number,
-        required: true
-    },
-    productStock: {
-        type: Number,
-        required: true
-    },
-    productCategory: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    stock: {
+         type: Number, 
+         required: true, 
+         default: 0 
+        },
 });
 
-export const productModel = mongoose.model<IProduct>("Product", ProductSchema);
+const ProductSchema: Schema = new Schema({
+    name: 
+    { 
+        type: String, 
+        required: true 
+    },
+    price: {
+         type: Number, 
+         required: true 
+        },        
+    mrp: {
+         type: Number, 
+         required: true 
+        },
+    discountPercentage: { 
+        type: Number, 
+        default: 0 
+    },
+    images: [{ 
+        type: String
+     }],
+    brand: { 
+        type: String, 
+        required: true 
+    },
+    productCategoriesID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductCategories",
+        required: true
+    },
+    variants:  [VariantSchema],
+}, { timestamps: true });
+
+export const productModel = (mongoose.models.Product as mongoose.Model<IProduct>) || mongoose.model<IProduct>("Product", ProductSchema);

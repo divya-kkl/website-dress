@@ -7,24 +7,24 @@ export const ProductService = {
             const regex = new RegExp(search, 'i');
             filter = {
                 $or: [
-                    { productName: { $regex: regex } },
-                    { productCategory: { $regex: regex } }
+                    { name: { $regex: regex } },
+                    { brand: { $regex: regex } }
                 ]
             };
         }
         const products = await productModel.find(filter);
         return products.map((product) => ({
             id: product._id,
-            productName: product.productName,
-            productImage: product.productImage,
-            productMrp: product.productMrp,
-            productDiscount: product.productDiscount,
-            productSize: product.productSize,
-            productGender: product.productGender,
-            productPrice: product.productPrice,
-            productStock: product.productStock,
-            productCategory: product.productCategory,
-            createdAt: product.createdAt?.toString()
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            productCategoriesID: product.productCategoriesID?.toString(),
+            variants: product.variants,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
         }));
     },
 
@@ -35,47 +35,51 @@ export const ProductService = {
         }
         return {
             id: product._id,
-            productName: product.productName,
-            productImage: product.productImage,
-            productMrp: product.productMrp,
-            productDiscount: product.productDiscount,
-            productSize: product.productSize,
-            productGender: product.productGender,
-            productPrice: product.productPrice,
-            productStock: product.productStock,
-            productCategory: product.productCategory,
-            createdAt: product.createdAt?.toString()
+            name: product.name,
+            price: product.price,
+            mrp: product.mrp,
+            discountPercentage: product.discountPercentage,
+            images: product.images,
+            brand: product.brand,
+            productCategoriesID: product.productCategoriesID?.toString(),
+            variants: product.variants,
+            createdAt: product.createdAt?.toString(),
+            updatedAt: (product as any).updatedAt?.toString()
         };
     },
 
     async createProduct(input: any) {
-        if (input.productMrp) {
-            const discount = input.productDiscount || 0;
-            input.productPrice = input.productMrp - (input.productMrp * (discount / 100));
+        if (input.mrp !== undefined) {
+            const discount = input.discountPercentage || 0;
+            if (input.price === undefined) {
+                input.price = input.mrp - (input.mrp * (discount / 100));
+            }
         }
         const newProduct = await productModel.create(input);
         return {
             id: newProduct._id,
-            productName: newProduct.productName,
-            productImage: newProduct.productImage,
-            productMrp: newProduct.productMrp,
-            productDiscount: newProduct.productDiscount,
-            productSize: newProduct.productSize,
-            productGender: newProduct.productGender,
-            productPrice: newProduct.productPrice,
-            productStock: newProduct.productStock,
-            productCategory: newProduct.productCategory,
-            createdAt: newProduct.createdAt?.toString()
+            name: newProduct.name,
+            price: newProduct.price,
+            mrp: newProduct.mrp,
+            discountPercentage: newProduct.discountPercentage,
+            images: newProduct.images,
+            brand: newProduct.brand,
+            productCategoriesID: newProduct.productCategoriesID?.toString(),
+            variants: newProduct.variants,
+            createdAt: newProduct.createdAt?.toString(),
+            updatedAt: (newProduct as any).updatedAt?.toString()
         };
     },
 
     async updateProduct(id: string, input: any) {
-        if (input.productMrp !== undefined || input.productDiscount !== undefined) {
+        if (input.mrp !== undefined || input.discountPercentage !== undefined) {
             const product = await productModel.findById(id);
             if (product) {
-                const mrp = input.productMrp !== undefined ? input.productMrp : product.productMrp;
-                const discount = input.productDiscount !== undefined ? input.productDiscount : product.productDiscount;
-                input.productPrice = mrp - (mrp * (discount / 100));
+                const mrp = input.mrp !== undefined ? input.mrp : product.mrp;
+                const discount = input.discountPercentage !== undefined ? input.discountPercentage : product.discountPercentage;
+                if (input.price === undefined) {
+                    input.price = mrp - (mrp * (discount / 100));
+                }
             }
         }
         const updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
@@ -84,16 +88,16 @@ export const ProductService = {
         }
         return {
             id: updatedProduct._id,
-            productName: updatedProduct.productName,
-            productImage: updatedProduct.productImage,
-            productMrp: updatedProduct.productMrp,
-            productDiscount: updatedProduct.productDiscount,
-            productSize: updatedProduct.productSize,
-            productGender: updatedProduct.productGender,
-            productPrice: updatedProduct.productPrice,
-            productStock: updatedProduct.productStock,
-            productCategory: updatedProduct.productCategory,
-            createdAt: updatedProduct.createdAt?.toString()
+            name: updatedProduct.name,
+            price: updatedProduct.price,
+            mrp: updatedProduct.mrp,
+            discountPercentage: updatedProduct.discountPercentage,
+            images: updatedProduct.images,
+            brand: updatedProduct.brand,
+            productCategoriesID: updatedProduct.productCategoriesID?.toString(),
+            variants: updatedProduct.variants,
+            createdAt: updatedProduct.createdAt?.toString(),
+            updatedAt: (updatedProduct as any).updatedAt?.toString()
         };
     },
 

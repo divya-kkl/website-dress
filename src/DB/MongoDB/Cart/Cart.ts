@@ -1,18 +1,20 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ICartItem {
+export interface ICartProduct {
     productId: string;
     quantity: number;
 }
 
 export interface ICart extends Document {
     userId: string;
-    items: ICartItem[];
+    shopId: string;
+    products: ICartProduct[];
+    status: "ACTIVE" | "INACTIVE";
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-const CartItemSchema = new Schema<ICartItem>({
+const CartProductSchema = new Schema<ICartProduct>({
     productId: {
         type: String,
         required: true
@@ -30,7 +32,16 @@ const CartSchema = new Schema<ICart>({
         required: true,
         unique: true
     },
-    items: [CartItemSchema]
+    shopId: {
+        type: String,
+        required: true
+    },
+    products: [CartProductSchema],
+    status: {
+        type: String,
+        enum: ["ACTIVE", "INACTIVE"],
+        default: "ACTIVE"
+    }
 }, { timestamps: true });
 
 export const cartModel = mongoose.model<ICart>("Cart", CartSchema);
