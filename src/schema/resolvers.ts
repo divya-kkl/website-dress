@@ -5,6 +5,7 @@ import { ShopUserResolver } from "../Modules/ShopUser/ShopUser.resolvers.js";
 import { CartResolver } from "../Modules/Cart/Cart.resolvers.js";
 import { OrderResolver } from "../Modules/Order/Order.resolvers.js";
 import { ProductCategoryResolver } from "../Modules/ProductCategories/ProductCategories.resolvers.js";
+import { CouponResolver } from "../Modules/Coupon/Coupon.resolvers.js";
 
 const resolversArray = [
     UserResolver,
@@ -12,7 +13,8 @@ const resolversArray = [
     ShopUserResolver,
     CartResolver,
     OrderResolver,
-    ProductCategoryResolver
+    ProductCategoryResolver,
+    CouponResolver
 ];
 
 export const resolvers = mergeResolvers(resolversArray);

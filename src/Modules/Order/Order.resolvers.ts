@@ -10,8 +10,8 @@ export const OrderResolver = {
         }
     },
     Mutation: {
-        createOrder: async (_: any, { input }: any, context: any) => {
-            return OrderService.createOrder(input);
+        placeOrder: async (_: any, { input }: any, context: any) => {
+            return OrderService.placeOrder(input);
         },
         deleteOrder: async (_: any, { id }: any, context: any) => {
             return OrderService.deleteOrder(id);
