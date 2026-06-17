@@ -8,6 +8,8 @@ export const ProductCategoryType = gql`
     description: String
     imageUrl: String
     status: String!
+    parentCategoryId: String
+    subCategories: [SubCategory]
     createdTime: String
   }
 
@@ -17,6 +19,7 @@ export const ProductCategoryType = gql`
     description: String
     imageUrl: String
     status: String
+    parentCategoryId: String
   }
 
   input UpdateProductCategoryInput {
@@ -25,6 +28,7 @@ export const ProductCategoryType = gql`
     description: String
     imageUrl: String
     status: String
+    parentCategoryId: String
   }
 
   type Query {

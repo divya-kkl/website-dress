@@ -5,6 +5,7 @@ import { CartType } from "../Modules/Cart/Cart.type.js";
 import { OrderType } from "../Modules/Order/Order.type.js";
 import { ProductCategoryType } from "../Modules/ProductCategories/ProductCategories.type.js";
 import { CouponType } from "../Modules/Coupon/Coupon.type.js";
+import { SubCategoryType } from "../Modules/SubCategories/SubCategories.type.js";
 
 export const typeDefs = [
     UserType,
@@ -13,5 +14,6 @@ export const typeDefs = [
     CartType,
     OrderType,
     ProductCategoryType,
-    CouponType
+    CouponType,
+    SubCategoryType
 ];
