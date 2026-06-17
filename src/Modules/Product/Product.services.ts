@@ -12,7 +12,7 @@ export const ProductService = {
                 ]
             };
         }
-        const products = await productModel.find(filter);
+        const products = await productModel.find(filter).populate("productCategoriesID");
         return products.map((product) => ({
             id: product._id,
             name: product.name,
@@ -21,7 +21,9 @@ export const ProductService = {
             discountPercentage: product.discountPercentage,
             images: product.images,
             brand: product.brand,
-            productCategoriesID: product.productCategoriesID?.toString(),
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString(),
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
             variants: product.variants,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
@@ -33,7 +35,7 @@ export const ProductService = {
     },
 
     async getProductById(id: string) {
-        const product = await productModel.findById(id);
+        const product = await productModel.findById(id).populate("productCategoriesID");
         if (!product) {
             throw new Error("Product not found");
         }
@@ -45,7 +47,9 @@ export const ProductService = {
             discountPercentage: product.discountPercentage,
             images: product.images,
             brand: product.brand,
-            productCategoriesID: product.productCategoriesID?.toString(),
+            productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString(),
+            productCategoriesCode: (product.productCategoriesID as any)?.code || "",
+            productCategories: product.productCategoriesID,
             variants: product.variants,
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
@@ -59,7 +63,8 @@ export const ProductService = {
                 input.price = input.mrp - (input.mrp * (discount / 100));
             }
         }
-        const newProduct = await productModel.create(input);
+        let newProduct = await productModel.create(input);
+        newProduct = await newProduct.populate("productCategoriesID");
         return {
             id: newProduct._id,
             name: newProduct.name,
@@ -68,7 +73,9 @@ export const ProductService = {
             discountPercentage: newProduct.discountPercentage,
             images: newProduct.images,
             brand: newProduct.brand,
-            productCategoriesID: newProduct.productCategoriesID?.toString(),
+            productCategoriesID: (newProduct.productCategoriesID as any)?._id?.toString() || newProduct.productCategoriesID?.toString(),
+            productCategoriesCode: (newProduct.productCategoriesID as any)?.code || "",
+            productCategories: newProduct.productCategoriesID,
             variants: newProduct.variants,
             createdAt: newProduct.createdAt?.toString(),
             updatedAt: (newProduct as any).updatedAt?.toString()
@@ -86,10 +93,11 @@ export const ProductService = {
                 }
             }
         }
-        const updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
+        let updatedProduct = await productModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedProduct) {
             throw new Error("Product not found");
         }
+        updatedProduct = await updatedProduct.populate("productCategoriesID");
         return {
             id: updatedProduct._id,
             name: updatedProduct.name,
@@ -98,7 +106,9 @@ export const ProductService = {
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
             brand: updatedProduct.brand,
-            productCategoriesID: updatedProduct.productCategoriesID?.toString(),
+            productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString(),
+            productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
+            productCategories: updatedProduct.productCategoriesID,
             variants: updatedProduct.variants,
             createdAt: updatedProduct.createdAt?.toString(),
             updatedAt: (updatedProduct as any).updatedAt?.toString()

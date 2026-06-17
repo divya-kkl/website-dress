@@ -16,6 +16,8 @@ export const ProductType = gql`
     images: [String]!
     brand: String!
     productCategoriesID: String!
+    productCategoriesCode: String!
+    productCategories: ProductCategory!
     variants: [Variant]!
     createdAt: String
     updatedAt: String
@@ -35,6 +37,7 @@ export const ProductType = gql`
     images: [String]!
     brand: String!
     productCategoriesID: String!
+    productCategoriesCode: String!
     variants: [VariantInput]!
   }
 
@@ -46,6 +49,7 @@ export const ProductType = gql`
     images: [String]
     brand: String
     productCategoriesID: String
+    productCategoriesCode: String!
     variants: [VariantInput]
   }
 
