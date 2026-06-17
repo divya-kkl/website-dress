@@ -52,6 +52,7 @@ export const ProductType = gql`
   type Query {
     getAllProducts(search: String): [Product]
     getProductById(id: ID!): Product
+    getProduct(search: String): [Product]
   }
 
   type Mutation {

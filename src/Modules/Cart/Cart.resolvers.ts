@@ -5,6 +5,12 @@ export const CartResolver = {
         getAllCarts: async (_: any, __: any, context: any) => {
             return CartService.getAllCarts(__.search);
         },
+        getCartById: async (_: any, __: any, context: any) => {
+            return CartService.getCartById(__.id);
+        },
+        getCart: async (_: any, __: any, context: any) => {
+            return CartService.getAllCarts(__.search);
+        },
         getCartByUserId: async (_: any, __: any, context: any) => {
             return CartService.getCartByUserId(__.userId);
         }

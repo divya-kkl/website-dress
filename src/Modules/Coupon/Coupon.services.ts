@@ -20,6 +20,12 @@ export const CouponService = {
         return coupons.map(formatCoupon);
     },
 
+    async getCoupon(search?: string) {
+        const query = search ? { name: { $regex: search, $options: "i" } } : {};
+        const coupons = await couponModel.find(query);
+        return coupons.map(formatCoupon);
+    },
+
     async getCouponById(id: string) {
         const coupon = await couponModel.findById(id);
         if (!coupon) throw new Error("Coupon not found");

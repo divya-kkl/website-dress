@@ -58,6 +58,20 @@ export const CartService = {
         return Promise.all(carts.map(cart => formatCart(cart)));
     },
 
+    async getCart(search?: string) {
+        return CartService.getAllCarts(search);
+    },
+
+    async getCartById(id: string) {
+        const cart = await cartModel.findById(id);
+        if (!cart) {
+            throw new Error("Cart not found");
+        }
+        return formatCart(cart);
+    },
+
+
+
     async getCartByUserId(userId: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {

@@ -43,6 +43,7 @@ export const ShopUserType = gql`
   extend type Query {
     getAllShopUsers: [ShopUser]
     getShopUserById(id: ID!): ShopUser
+    getShopUser(search: String): [ShopUser]
   }
 
   extend type Mutation {

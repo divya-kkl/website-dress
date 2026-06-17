@@ -24,6 +24,10 @@ export const ProductCategoryService = {
         }));
     },
 
+    async getProductCategories(search?: string) {
+        return ProductCategoryService.getAllProductCategories(search);
+    },
+
     async getProductCategoryById(id: string) {
         const category = await productCategoryMOdel.findById(id);
         if (!category) {

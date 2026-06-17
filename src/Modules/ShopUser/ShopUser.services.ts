@@ -18,6 +18,10 @@ export const ShopUserService = {
         }));
     },
 
+    async getShopUser(search?: string, user?: any) {
+        return ShopUserService.getAllShopUsers(user);
+    },
+
     async getShopUserById(id: string, user: any) {
         if (!user) throw new Error("Unauthorized");
         const item = await shopUserModel.findById(id);
