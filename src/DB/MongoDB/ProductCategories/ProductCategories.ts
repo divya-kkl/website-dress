@@ -6,6 +6,7 @@ export interface IProductCategories extends Document {
     description?: string;
     imageUrl?: string;
     status: "ACTIVE" | "INACTIVE";
+    parentCategoryId?: string;
     createdTime: Date;
 }
 
@@ -38,8 +39,11 @@ const productCategorySchema = new Schema<IProductCategories>(
         createdTime: {
             type: Date,
             default: Date.now,
-
         },
+        parentCategoryId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "ProductCategories"
+        }
 
     },
 )

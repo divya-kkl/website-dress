@@ -15,9 +15,9 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]!
     brand: String!
-    productCategoriesID: String!
-    productCategoriesCode: String!
-    productCategories: ProductCategory!
+    productCategoriesID: String
+    productCategoriesCode: String
+    productCategories: ProductCategory
     variants: [Variant]!
     createdAt: String
     updatedAt: String

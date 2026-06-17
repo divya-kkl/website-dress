@@ -1,7 +1,7 @@
-import { productCategoryMOdel } from "../../DB/MongoDB/ProductCategories/ProductCategories.js";
+import { subCategoryModel } from "../../DB/MongoDB/SubCategories/SubCategories.js";
 
-export const ProductCategoryService = {
-    async getAllProductCategories(search?: string) {
+export const SubCategoryService = {
+    async getAllSubCategories(search?: string) {
         let filter = {};
         if (search) {
             const regex = new RegExp(search, 'i');
@@ -12,76 +12,76 @@ export const ProductCategoryService = {
                 ]
             };
         }
-        const categories = await productCategoryMOdel.find(filter);
+        const categories = await subCategoryModel.find(filter);
         return categories.map((category) => ({
             id: category._id,
             name: category.name,
             code: category.code,
+            productCategoryId: category.productCategoryId?.toString(),
             description: category.description,
             imageUrl: category.imageUrl,
             status: category.status,
-            parentCategoryId: category.parentCategoryId?.toString(),
             createdTime: category.createdTime?.toString()
         }));
     },
 
-    async getProductCategories(search?: string) {
-        return ProductCategoryService.getAllProductCategories(search);
+    async getSubCategory(search?: string) {
+        return SubCategoryService.getAllSubCategories(search);
     },
 
-    async getProductCategoryById(id: string) {
-        const category = await productCategoryMOdel.findById(id);
+    async getSubCategoryById(id: string) {
+        const category = await subCategoryModel.findById(id);
         if (!category) {
-            throw new Error("Product Category not found");
+            throw new Error("Sub Category not found");
         }
         return {
             id: category._id,
             name: category.name,
             code: category.code,
+            productCategoryId: category.productCategoryId?.toString(),
             description: category.description,
             imageUrl: category.imageUrl,
             status: category.status,
-            parentCategoryId: category.parentCategoryId?.toString(),
             createdTime: category.createdTime?.toString()
         };
     },
 
-    async createProductCategory(input: any) {
-        const newCategory = await productCategoryMOdel.create(input);
+    async createSubCategory(input: any) {
+        const newCategory = await subCategoryModel.create(input);
         return {
             id: newCategory._id,
             name: newCategory.name,
             code: newCategory.code,
+            productCategoryId: newCategory.productCategoryId?.toString(),
             description: newCategory.description,
             imageUrl: newCategory.imageUrl,
             status: newCategory.status,
-            parentCategoryId: newCategory.parentCategoryId?.toString(),
             createdTime: newCategory.createdTime?.toString()
         };
     },
 
-    async updateProductCategory(id: string, input: any) {
-        const updatedCategory = await productCategoryMOdel.findByIdAndUpdate(id, input, { new: true });
+    async updateSubCategory(id: string, input: any) {
+        const updatedCategory = await subCategoryModel.findByIdAndUpdate(id, input, { new: true });
         if (!updatedCategory) {
-            throw new Error("Product Category not found");
+            throw new Error("Sub Category not found");
         }
         return {
             id: updatedCategory._id,
             name: updatedCategory.name,
             code: updatedCategory.code,
+            productCategoryId: updatedCategory.productCategoryId?.toString(),
             description: updatedCategory.description,
             imageUrl: updatedCategory.imageUrl,
             status: updatedCategory.status,
-            parentCategoryId: updatedCategory.parentCategoryId?.toString(),
             createdTime: updatedCategory.createdTime?.toString()
         };
     },
 
-    async deleteProductCategory(id: string) {
-        const deletedCategory = await productCategoryMOdel.findByIdAndDelete(id);
+    async deleteSubCategory(id: string) {
+        const deletedCategory = await subCategoryModel.findByIdAndDelete(id);
         if (!deletedCategory) {
-            throw new Error("Product Category not found");
+            throw new Error("Sub Category not found");
         }
-        return "Product Category deleted successfully";
+        return "Sub Category deleted successfully";
     }
 };
