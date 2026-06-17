@@ -28,6 +28,10 @@ export const ProductService = {
         }));
     },
 
+    async getProduct(search?: string) {
+        return ProductService.getAllProducts(search);
+    },
+
     async getProductById(id: string) {
         const product = await productModel.findById(id);
         if (!product) {

@@ -99,6 +99,7 @@ export const OrderType = gql`
   type Query {
     getAllOrders: [Order]
     getOrderById(id: ID!): Order
+    getOrder(search: String): [Order]
   }
 
   type Mutation {

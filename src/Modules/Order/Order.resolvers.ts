@@ -7,6 +7,9 @@ export const OrderResolver = {
         },
         getOrderById: async (_: any, { id }: any, context: any) => {
             return OrderService.getOrderById(id);
+        },
+        getOrder: async (_: any, __: any, context: any) => {
+            return OrderService.getAllOrders();
         }
     },
     Mutation: {

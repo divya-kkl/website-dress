@@ -8,6 +8,9 @@ export const CouponResolver = {
         getCouponById: async (_: any, { id }: any) => {
             return CouponService.getCouponById(id);
         },
+        getCoupon: async (_: any, __: any, context: any) => {
+            return CouponService.getAllCoupons();
+        },
         getCouponByCode: async (_: any, { code }: any) => {
             return CouponService.getCouponByCode(code);
         }

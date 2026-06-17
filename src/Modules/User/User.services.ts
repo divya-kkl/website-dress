@@ -5,8 +5,18 @@ import { SocketAddress } from "net";
 
 export const UserService = {
 
-    async getAllUsers() {
-        const users = await userModel.find();
+    async getAllUsers(search?: string) {
+        let filter = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { username: { $regex: regex } },
+                    { email: { $regex: regex } }
+                ]
+            };
+        }
+        const users = await userModel.find(filter);
 
         return users.map((item) => ({
             id: item._id,
@@ -22,6 +32,30 @@ export const UserService = {
             createdAt: item.createdTime?.toString()
 
         }))
+    },
+
+    async getUser(search?: string) {
+        return UserService.getAllUsers(search);
+    },
+
+    async getUserById(id: string) {
+        const item = await userModel.findById(id);
+        if (!item) {
+            throw new Error("User not found");
+        }
+        return {
+            id: item._id,
+            username: item.username,
+            email: item.email,
+            country: item.country,
+            state: item.state,
+            city: item.city,
+            address: item.address,
+            phone_number: item.phone_number,
+            pincode: item.pincode,
+            gender: item.gender,
+            createdAt: item.createdTime?.toString()
+        };
     },
 
     async register(input: any = {}) {

@@ -7,6 +7,9 @@ export const ShopUserResolver = {
         },
         getShopUserById: async (_: any, __: any, context: any) => {
             return ShopUserService.getShopUserById(__.id, context.user);
+        },
+        getShopUser: async (_: any, __: any, context: any) => {
+            return ShopUserService.getAllShopUsers(context.user);
         }
     },
     Mutation: {

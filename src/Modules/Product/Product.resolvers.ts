@@ -7,6 +7,9 @@ export const ProductResolver = {
         },
         getProductById: async (_: any, __: any, context: any) => {
             return ProductService.getProductById(__.id);
+        },
+        getProduct: async (_: any, __: any, context: any) => {
+            return ProductService.getAllProducts(__.search);
         }
     },
     Mutation: {

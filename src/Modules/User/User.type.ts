@@ -54,7 +54,9 @@ input UpdateUserInput {
     password: String!
 }
     type Query {
-    getAllUser: [User]
+    getAllUser(search: String): [User]
+    getUserById(id: ID!): User
+    getUser(search: String): [User]
 }
     
     type Mutation {

@@ -3,7 +3,13 @@ import { UserService } from "./User.services.js";
 export const UserResolver = {
     Query: {
         getAllUser: async (_: any, __: any, context: any) => {
-            return UserService.getAllUsers();
+            return UserService.getAllUsers(__.search);
+        },
+        getUserById: async (_: any, __: any, context: any) => {
+            return UserService.getUserById(__.id);
+        },
+        getUser: async (_: any, __: any, context: any) => {
+            return UserService.getAllUsers(__.search);
         }
     },
     Mutation: {

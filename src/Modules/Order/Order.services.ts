@@ -26,6 +26,10 @@ export const OrderService = {
         }));
     },
 
+    async getOrder(search?: string) {
+        return OrderService.getAllOrders();
+    },
+
     async getOrderById(id: string) {
         const item: any = await OrderModel.findById(id).populate("shopDetails");
         if (!item) {
