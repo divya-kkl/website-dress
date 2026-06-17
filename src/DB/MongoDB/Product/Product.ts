@@ -20,53 +20,53 @@ export interface IProduct extends Document {
 }
 
 const VariantSchema: Schema = new Schema({
-    color: { 
-        type: String, 
-        required: true 
+    color: {
+        type: String,
+        required: true
     },
-    size: 
-    { 
-        type: String, 
-        required: true 
+    size:
+    {
+        type: String,
+        required: true
     },
     stock: {
-         type: Number, 
-         required: true, 
-         default: 0 
-        },
+        type: Number,
+        required: true,
+        default: 0
+    },
 });
 
 const ProductSchema: Schema = new Schema({
-    name: 
-    { 
-        type: String, 
-        required: true 
+    name:
+    {
+        type: String,
+        required: true
     },
     price: {
-         type: Number, 
-         required: true 
-        },        
-    mrp: {
-         type: Number, 
-         required: true 
-        },
-    discountPercentage: { 
-        type: Number, 
-        default: 0 
+        type: Number,
+        required: true
     },
-    images: [{ 
+    mrp: {
+        type: Number,
+        required: true
+    },
+    discountPercentage: {
+        type: Number,
+        default: 0
+    },
+    images: [{
         type: String
-     }],
-    brand: { 
-        type: String, 
-        required: true 
+    }],
+    brand: {
+        type: String,
+        required: true
     },
     productCategoriesID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductCategories",
         required: true
     },
-    variants:  [VariantSchema],
+    variants: [VariantSchema],
 }, { timestamps: true });
 
 export const productModel = (mongoose.models.Product as mongoose.Model<IProduct>) || mongoose.model<IProduct>("Product", ProductSchema);
