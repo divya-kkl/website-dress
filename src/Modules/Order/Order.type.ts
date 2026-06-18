@@ -18,13 +18,11 @@ export const OrderType = gql`
     city: String!
     state: String!
     country: String!
-    zipCode: String!
     phone: String!
   }
 
   type DeliveryPartner {
     name: String!
-    trackingId: String!
     contactNumber: String!
   }
 
@@ -67,33 +65,22 @@ export const OrderType = gql`
     city: String!
     state: String!
     country: String!
-    zipCode: String!
     phone: String!
   }
 
   input DeliveryPartnerInput {
     name: String!
-    trackingId: String!
     contactNumber: String!
   }
 
   input PlaceOrderInput {
-    userId: ID!
     shopDetails: ID
-    orderNumber: String!
-    items: [OrderItemInput!]!
-    subTotal: Float!
     deliveryCharge: Float!
-    totalAmount: Float!
-    status: String
-    paymentStatus: String
     paymentMethod: String!
     deliveryAddress: DeliveryAddressInput!
     notes: String
     image: String
     couponCode: String
-    isCouponApplied: Boolean
-    deliveryPartner: DeliveryPartnerInput
   }
 
   type Query {

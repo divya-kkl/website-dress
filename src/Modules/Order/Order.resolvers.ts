@@ -14,7 +14,7 @@ export const OrderResolver = {
     },
     Mutation: {
         placeOrder: async (_: any, { input }: any, context: any) => {
-            return OrderService.placeOrder(input);
+            return OrderService.placeOrder(input, context);
         },
         deleteOrder: async (_: any, { id }: any, context: any) => {
             return OrderService.deleteOrder(id);
