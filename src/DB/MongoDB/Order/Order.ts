@@ -17,24 +17,22 @@ export interface IDeliveryAddress {
     city: string;
     state: string;
     country: string;
-    zipCode: string;
     phone: string;
 }
 
 export interface IDeliveryPartner {
     name: string;
-    trackingId: string;
     contactNumber: string;
 }
 
 export interface IOrder extends Document {
-    userId: Types.ObjectId;
+    userId?: Types.ObjectId;
     shopDetails?: Types.ObjectId; // Renamed to shopDetails based on user request (was shopId)
-    orderNumber: string;
-    items: IOrderItem[];
-    subTotal: number;
+    orderNumber?: string;
+    items?: IOrderItem[];
+    subTotal?: number;
     deliveryCharge: number;
-    totalAmount: number;
+    totalAmount?: number;
     status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
     paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
     paymentMethod: "COD" | "ONLINE" | "UPI" | "CARD";
@@ -99,10 +97,6 @@ const DeliveryAddressSchema = new Schema<IDeliveryAddress>({
         type: String, 
         required: true 
     },
-    zipCode: { 
-        type: String, 
-        required: true 
-    },
     phone: { 
         type: String, 
         required: true 
@@ -111,10 +105,6 @@ const DeliveryAddressSchema = new Schema<IDeliveryAddress>({
 
 const DeliveryPartnerSchema = new Schema<IDeliveryPartner>({
     name: { 
-        type: String, 
-        required: true 
-    },
-    trackingId: { 
         type: String, 
         required: true 
     },
@@ -127,7 +117,7 @@ const DeliveryPartnerSchema = new Schema<IDeliveryPartner>({
 const OrderSchema = new Schema<IOrder>({
     userId: { 
         type: Schema.Types.ObjectId, 
-        required: true 
+        required: false 
     },
     shopDetails: { 
         type: Schema.Types.ObjectId, 
@@ -135,16 +125,16 @@ const OrderSchema = new Schema<IOrder>({
     },
     orderNumber: { 
         type: String, 
-        required: true, 
-        unique: true 
+        required: false, 
+        unique: false 
     },
     items: { 
         type: [OrderItemSchema], 
-        required: true 
+        required: false 
     },
     subTotal: { 
         type: Number, 
-        required: true 
+        required: false 
     },
     deliveryCharge: { 
         type: Number, 
@@ -152,7 +142,7 @@ const OrderSchema = new Schema<IOrder>({
     },
     totalAmount: { 
         type: Number, 
-        required: true 
+        required: false 
     },
     status: { 
         type: String, 

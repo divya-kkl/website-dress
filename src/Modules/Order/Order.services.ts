@@ -1,4 +1,6 @@
 import { OrderModel } from "../../DB/MongoDB/Order/Order.js";
+import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
+import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 export const OrderService = {
     async getAllOrders() {
@@ -58,34 +60,83 @@ export const OrderService = {
         };
     },
 
-    async placeOrder(input: any) {
-        const exist = await OrderModel.findOne({ orderNumber: input.orderNumber });
-        if (exist) {
-            throw new Error("Order already exists with this orderNumber");
+    async placeOrder(input: any, context: any) {
+        if (!context || !context.user || !context.user.id) {
+            throw new Error("Unauthorized: Please login to place an order");
         }
 
-        const newOrder: any = await OrderModel.create(input);
+        const userId = context.user.id;
+
+        // Fetch active cart
+        const cart = await cartModel.findOne({ userId, status: "ACTIVE" });
+        if (!cart || !cart.products || cart.products.length === 0) {
+            throw new Error("Cart is empty");
+        }
+
+        let subTotal = 0;
+        const items = [];
+
+        for (const cartProduct of cart.products) {
+            const product = await productModel.findById(cartProduct.productId);
+            if (!product) {
+                throw new Error(`Product not found for id: ${cartProduct.productId}`);
+            }
+
+            subTotal += product.price * cartProduct.quantity;
+            items.push({
+                productId: product._id,
+                quantity: cartProduct.quantity,
+                price: product.price,
+                mrp: product.mrp,
+                name: product.name,
+                image: product.images?.[0] || "no-image-available",
+                size: "Default"
+            });
+        }
+
+        const totalAmount = subTotal + (input.deliveryCharge || 0);
+        const orderNumber = "ORD" + Date.now().toString() + Math.floor(Math.random() * 1000).toString();
+
+        if (input.paymentMethod === 'cashONDelivery' || input.paymentMethod === 'Cash on Delivery') {
+            input.paymentMethod = 'COD';
+        }
+
+        const orderData = {
+            ...input,
+            userId,
+            items,
+            subTotal,
+            totalAmount,
+            orderNumber
+        };
+
+        const newOrder: any = await OrderModel.create(orderData);
+        const populatedOrder: any = await OrderModel.findById(newOrder._id).populate("shopDetails");
+
+        // Clear the cart
+        cart.status = "INACTIVE";
+        await cart.save();
 
         return {
-            id: newOrder._id,
-            userId: newOrder.userId,
-            shopDetails: newOrder.shopDetails,
-            orderNumber: newOrder.orderNumber,
-            items: newOrder.items,
-            subTotal: newOrder.subTotal,
-            deliveryCharge: newOrder.deliveryCharge,
-            totalAmount: newOrder.totalAmount,
-            status: newOrder.status,
-            paymentStatus: newOrder.paymentStatus,
-            paymentMethod: newOrder.paymentMethod,
-            deliveryAddress: newOrder.deliveryAddress,
-            notes: newOrder.notes,
-            image: newOrder.image,
-            couponCode: newOrder.couponCode,
-            isCouponApplied: newOrder.isCouponApplied,
-            deliveryPartner: newOrder.deliveryPartner,
-            createdAt: newOrder.createdAt?.toString(),
-            updatedAt: newOrder.updatedAt?.toString(),
+            id: populatedOrder._id,
+            userId: populatedOrder.userId,
+            shopDetails: populatedOrder.shopDetails,
+            orderNumber: populatedOrder.orderNumber,
+            items: populatedOrder.items,
+            subTotal: populatedOrder.subTotal,
+            deliveryCharge: populatedOrder.deliveryCharge,
+            totalAmount: populatedOrder.totalAmount,
+            status: populatedOrder.status,
+            paymentStatus: populatedOrder.paymentStatus,
+            paymentMethod: populatedOrder.paymentMethod,
+            deliveryAddress: populatedOrder.deliveryAddress,
+            notes: populatedOrder.notes,
+            image: populatedOrder.image,
+            couponCode: populatedOrder.couponCode,
+            isCouponApplied: populatedOrder.isCouponApplied,
+            deliveryPartner: populatedOrder.deliveryPartner,
+            createdAt: populatedOrder.createdAt?.toString(),
+            updatedAt: populatedOrder.updatedAt?.toString(),
         };
     },
 
