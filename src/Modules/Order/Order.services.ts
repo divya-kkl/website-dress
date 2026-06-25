@@ -1,13 +1,31 @@
 import { OrderModel } from "../../DB/MongoDB/Order/Order.js";
 import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
+import { userModel } from "../../DB/MongoDB/User/User.js";
 
 export const OrderService = {
-    async getAllOrders() {
-        const orders = await OrderModel.find().populate("shopDetails");
-        return orders.map((item: any) => ({
+    async getAllOrders(search?: string, page?: number, limit?: number) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { orderNumber: { $regex: regex } },
+                    { status: { $regex: regex } }
+                ]
+            };
+        }
+        let query = OrderModel.find(filter).populate("shopDetails").sort({ createdAt: -1 });
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const orders = await query;
+        return orders
+            .filter((item: any) => item.userId && item.orderNumber && item.createdAt)
+            .map((item: any) => ({
             id: item._id,
-            userId: item.userId,
+            userId: item.userId?.toString(),
             shopDetails: item.shopDetails,
             orderNumber: item.orderNumber,
             items: item.items,
@@ -28,8 +46,63 @@ export const OrderService = {
         }));
     },
 
-    async getOrder(search?: string) {
-        return OrderService.getAllOrders();
+    async getTotalOrdersCount(search?: string) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { orderNumber: { $regex: regex } },
+                    { status: { $regex: regex } }
+                ]
+            };
+        }
+        return await OrderModel.countDocuments(filter);
+    },
+
+    async getOrder(search?: string, page?: number, limit?: number) {
+        return OrderService.getAllOrders(search, page, limit);
+    },
+
+    async getUserAddresses(context: any) {
+        if (!context || !context.user || !context.user.id) {
+            throw new Error("Unauthorized: Please login to get addresses");
+        }
+        const userId = context.user.id;
+        
+        const user = await userModel.findById(userId);
+        const addresses: any[] = [];
+        
+        if (user && user.addresses && user.addresses.length > 0) {
+            for (const addr of user.addresses) {
+                addresses.push({
+                    addressType: addr.isDefault ? "Home" : "Other",
+                    name: `${addr.firstName || ''} ${addr.lastName || ''}`.trim(),
+                    street: `${addr.address || ''} ${addr.apartment || ''}`.trim(),
+                    city: addr.city || '',
+                    state: addr.state || '',
+                    country: addr.country || '',
+                    phone: addr.phone || ''
+                });
+            }
+            return addresses;
+        }
+
+        const orders = await OrderModel.find({ userId }).sort({ createdAt: -1 });
+        const seen = new Set();
+        
+        for (const order of orders) {
+            if (order.deliveryAddress) {
+                const addr = order.deliveryAddress;
+                const key = `${addr.name}-${addr.phone}-${addr.street}-${addr.city}-${addr.state}-${addr.country}-${addr.addressType}`.toLowerCase();
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    addresses.push(addr);
+                }
+            }
+        }
+        
+        return addresses;
     },
 
     async getOrderById(id: string) {
@@ -113,6 +186,39 @@ export const OrderService = {
         const newOrder: any = await OrderModel.create(orderData);
         const populatedOrder: any = await OrderModel.findById(newOrder._id).populate("shopDetails");
 
+        try {
+            const user = await userModel.findById(userId);
+            if (user) {
+                const deliveryAddr = input.deliveryAddress;
+                const exists = user.addresses?.some(addr => 
+                    addr.phone === deliveryAddr.phone && 
+                    addr.address === deliveryAddr.street && 
+                    addr.city === deliveryAddr.city
+                );
+                
+                if (!exists) {
+                    const nameParts = deliveryAddr.name ? deliveryAddr.name.split(" ") : [];
+                    const firstName = nameParts.length > 0 ? nameParts[0] : "";
+                    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+                    
+                    user.addresses = user.addresses || [];
+                    user.addresses.push({
+                        firstName: firstName,
+                        lastName: lastName,
+                        address: deliveryAddr.street,
+                        city: deliveryAddr.city,
+                        state: deliveryAddr.state,
+                        country: deliveryAddr.country,
+                        phone: deliveryAddr.phone,
+                        isDefault: user.addresses.length === 0
+                    });
+                    await user.save();
+                }
+            }
+        } catch(e) {
+            console.error("Failed to save delivery address to user profile", e);
+        }
+
         // Clear the cart
         cart.status = "INACTIVE";
         await cart.save();
@@ -146,5 +252,44 @@ export const OrderService = {
             throw new Error("Order not found");
         }
         return "Order deleted successfully";
+    },
+
+    async updateOrderStatus(id: string, status: string, image?: string) {
+        const updateData: any = { status };
+        if (image !== undefined) {
+            updateData.image = image;
+        }
+
+        const item: any = await OrderModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        ).populate("shopDetails");
+
+        if (!item) {
+            throw new Error("Order not found");
+        }
+
+        return {
+            id: item._id,
+            userId: item.userId?.toString(),
+            shopDetails: item.shopDetails,
+            orderNumber: item.orderNumber,
+            items: item.items,
+            subTotal: item.subTotal,
+            deliveryCharge: item.deliveryCharge,
+            totalAmount: item.totalAmount,
+            status: item.status,
+            paymentStatus: item.paymentStatus,
+            paymentMethod: item.paymentMethod,
+            deliveryAddress: item.deliveryAddress,
+            notes: item.notes,
+            image: item.image,
+            couponCode: item.couponCode,
+            isCouponApplied: item.isCouponApplied,
+            deliveryPartner: item.deliveryPartner,
+            createdAt: item.createdAt?.toString(),
+            updatedAt: item.updatedAt?.toString(),
+        };
     }
 };

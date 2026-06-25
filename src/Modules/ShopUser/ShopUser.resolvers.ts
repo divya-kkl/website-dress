@@ -3,13 +3,13 @@ import { ShopUserService } from "./ShopUser.services.js";
 export const ShopUserResolver = {
     Query: {
         getAllShopUsers: async (_: any, __: any, context: any) => {
-            return ShopUserService.getAllShopUsers(context.user);
+            return ShopUserService.getAllShopUsers(context.user, __.search, __.page, __.limit);
         },
         getShopUserById: async (_: any, __: any, context: any) => {
             return ShopUserService.getShopUserById(__.id, context.user);
         },
         getShopUser: async (_: any, __: any, context: any) => {
-            return ShopUserService.getAllShopUsers(context.user);
+            return ShopUserService.getAllShopUsers(context.user, __.search, __.page, __.limit);
         }
     },
     Mutation: {

@@ -5,7 +5,7 @@ import { SocketAddress } from "net";
 
 export const UserService = {
 
-    async getAllUsers(search?: string) {
+    async getAllUsers(search?: string, page?: number, limit?: number) {
         let filter = {};
         if (search) {
             const regex = new RegExp(search, 'i');
@@ -16,7 +16,14 @@ export const UserService = {
                 ]
             };
         }
-        const users = await userModel.find(filter);
+        
+        let query = userModel.find(filter).sort({ createdTime: -1 });
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        
+        const users = await query;
 
         return users.map((item) => ({
             id: item._id,
@@ -29,13 +36,29 @@ export const UserService = {
             phone_number: item.phone_number,
             pincode: item.pincode,
             gender: item.gender,
+            addresses: item.addresses,
             createdAt: item.createdTime?.toString()
 
         }))
     },
 
-    async getUser(search?: string) {
-        return UserService.getAllUsers(search);
+    async getTotalUserCount(search?: string) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { username: { $regex: regex } },
+                    { email: { $regex: regex } },
+                    { phone_number: { $regex: regex } }
+                ]
+            };
+        }
+        return await userModel.countDocuments(filter);
+    },
+
+    async getUser(search?: string, page?: number, limit?: number) {
+        return UserService.getAllUsers(search, page, limit);
     },
 
     async getUserById(id: string) {
@@ -54,6 +77,7 @@ export const UserService = {
             phone_number: item.phone_number,
             pincode: item.pincode,
             gender: item.gender,
+            addresses: item.addresses,
             createdAt: item.createdTime?.toString()
         };
     },
@@ -105,6 +129,7 @@ export const UserService = {
                 phone_number: newUser.phone_number,
                 pincode: newUser.pincode,
                 gender: newUser.gender,
+                addresses: newUser.addresses,
                 createdTime: newUser.createdTime?.toString(),
             },
             token,
@@ -142,6 +167,7 @@ export const UserService = {
                 phone_number: user.phone_number,
                 pincode: user.pincode,
                 gender: user.gender,
+                addresses: user.addresses,
                 createdTime: user.createdTime?.toString(),
             },
             token
@@ -165,6 +191,7 @@ export const UserService = {
             phone_number: updatedUser.phone_number,
             pincode: updatedUser.pincode,
             gender: updatedUser.gender,
+            addresses: updatedUser.addresses,
             createdTime: updatedUser.createdTime?.toString(),
         };
     },

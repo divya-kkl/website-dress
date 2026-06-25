@@ -32,9 +32,10 @@ export const ProductCategoryType = gql`
   }
 
   type Query {
-    getAllProductCategories(search: String): [ProductCategory]
+    getAllProductCategories(search: String, page: Int, limit: Int): [ProductCategory]
+    getTotalProductCategoriesCount(search: String): Int
     getProductCategoryById(id: ID!): ProductCategory
-    getProductCategories(search: String): [ProductCategory]
+    getProductCategories(search: String, page: Int, limit: Int): [ProductCategory]
   }
 
   type Mutation {

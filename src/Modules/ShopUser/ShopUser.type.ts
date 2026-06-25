@@ -8,7 +8,7 @@ export const ShopUserType = gql`
     email: String!
     contactNumber: String!
     address: String
-  
+    image: String
     createdAt: String
   }
 
@@ -18,7 +18,8 @@ export const ShopUserType = gql`
     email: String!
     password: String!
     contactNumber: String!
-   
+    image: String
+    address: String
     gstNumber: String
   }
 
@@ -32,6 +33,7 @@ export const ShopUserType = gql`
     ownerName: String
     contactNumber: String
     address: String
+    image: String
    
   }
 
@@ -41,9 +43,9 @@ export const ShopUserType = gql`
   }
 
   extend type Query {
-    getAllShopUsers: [ShopUser]
+    getAllShopUsers(search: String, page: Int, limit: Int): [ShopUser]
     getShopUserById(id: ID!): ShopUser
-    getShopUser(search: String): [ShopUser]
+    getShopUser(search: String, page: Int, limit: Int): [ShopUser]
   }
 
   extend type Mutation {

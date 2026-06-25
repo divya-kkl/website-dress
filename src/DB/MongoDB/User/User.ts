@@ -1,5 +1,18 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IAddress {
+    firstName?: string;
+    lastName?: string;
+    address?: string;
+    apartment?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    country?: string;
+    phone?: string;
+    isDefault?: boolean;
+}
+
 export interface IUser extends Document {
     username?: string,
     email?: string,
@@ -10,9 +23,23 @@ export interface IUser extends Document {
     state: string,
     phone_number: string,
     pincode: string,
+    addresses?: IAddress[],
     createdTime: Date;
     gender: string;
 }
+
+const AddressSchema = new Schema<IAddress>({
+    firstName: String,
+    lastName: String,
+    address: String,
+    apartment: String,
+    city: String,
+    state: String,
+    pincode: String,
+    country: String,
+    phone: String,
+    isDefault: { type: Boolean, default: false }
+});
 
 const UserSchema = new Schema<IUser>({
     username: {
@@ -48,6 +75,10 @@ const UserSchema = new Schema<IUser>({
     },
     pincode: {
         type: String
+    },
+    addresses: {
+        type: [AddressSchema],
+        default: []
     },
     createdTime: {
         type: Date,

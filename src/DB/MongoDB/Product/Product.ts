@@ -15,6 +15,15 @@ export interface IProduct extends Document {
     brand: string;
     productCategoriesID: mongoose.Types.ObjectId | string;
     variants: IVariant[];
+    description?: string;
+    material?: string;
+    embellishment?: string;
+    neck?: string;
+    sleeves?: string;
+    closure?: string;
+    lining?: string;
+    washCare?: string;
+    ironCare?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -67,6 +76,15 @@ const ProductSchema: Schema = new Schema({
         required: true
     },
     variants: [VariantSchema],
+    description: { type: String },
+    material: { type: String },
+    embellishment: { type: String },
+    neck: { type: String },
+    sleeves: { type: String },
+    closure: { type: String },
+    lining: { type: String },
+    washCare: { type: String },
+    ironCare: { type: String },
 }, { timestamps: true });
 
 export const productModel = (mongoose.models.Product as mongoose.Model<IProduct>) || mongoose.model<IProduct>("Product", ProductSchema);

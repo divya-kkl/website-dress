@@ -15,15 +15,28 @@ const formatCoupon = (coupon: any) => ({
 });
 
 export const CouponService = {
-    async getAllCoupons() {
-        const coupons = await couponModel.find();
+    async getAllCoupons(search?: string, page?: number, limit?: number) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { name: { $regex: regex } },
+                    { code: { $regex: regex } }
+                ]
+            };
+        }
+        let query = couponModel.find(filter);
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const coupons = await query;
         return coupons.map(formatCoupon);
     },
 
-    async getCoupon(search?: string) {
-        const query = search ? { name: { $regex: search, $options: "i" } } : {};
-        const coupons = await couponModel.find(query);
-        return coupons.map(formatCoupon);
+    async getCoupon(search?: string, page?: number, limit?: number) {
+        return CouponService.getAllCoupons(search, page, limit);
     },
 
     async getCouponById(id: string) {

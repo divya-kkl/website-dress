@@ -31,9 +31,9 @@ export const SubCategoryType = gql`
   }
 
   extend type Query {
-    getAllSubCategories(search: String): [SubCategory]
+    getAllSubCategories(search: String, page: Int, limit: Int): [SubCategory]
     getSubCategoryById(id: ID!): SubCategory
-    getSubCategory(search: String): [SubCategory]
+    getSubCategory(search: String, page: Int, limit: Int): [SubCategory]
   }
 
   extend type Mutation {

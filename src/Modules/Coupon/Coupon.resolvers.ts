@@ -2,14 +2,14 @@ import { CouponService } from "./Coupon.services.js";
 
 export const CouponResolver = {
     Query: {
-        getAllCoupons: async () => {
-            return CouponService.getAllCoupons();
+        getAllCoupons: async (_: any, __: any, context: any) => {
+            return CouponService.getAllCoupons(__.search, __.page, __.limit);
         },
         getCouponById: async (_: any, { id }: any) => {
             return CouponService.getCouponById(id);
         },
         getCoupon: async (_: any, __: any, context: any) => {
-            return CouponService.getAllCoupons();
+            return CouponService.getAllCoupons(__.search, __.page, __.limit);
         },
         getCouponByCode: async (_: any, { code }: any) => {
             return CouponService.getCouponByCode(code);

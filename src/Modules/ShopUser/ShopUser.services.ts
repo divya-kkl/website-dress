@@ -4,9 +4,25 @@ import { signToken } from "../../helpers/validation.js";
 
 export const ShopUserService = {
 
-    async getAllShopUsers(user: any) {
-        if (!user) throw new Error("Unauthorized");
-        const users = await shopUserModel.find();
+    async getAllShopUsers(user: any, search?: string, page?: number, limit?: number) {
+        
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { shopName: { $regex: regex } },
+                    { ownerName: { $regex: regex } },
+                    { email: { $regex: regex } }
+                ]
+            };
+        }
+        let query = shopUserModel.find(filter);
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const users = await query;
         return users.map((item) => ({
             id: item._id,
             shopName: item.shopName,
@@ -14,12 +30,13 @@ export const ShopUserService = {
             email: item.email,
             contactNumber: item.contactNumber,
             address: item.address,
+            image: item.image,
             createdAt: item.createdAt?.toString()
         }));
     },
 
-    async getShopUser(search?: string, user?: any) {
-        return ShopUserService.getAllShopUsers(user);
+    async getShopUser(search?: string, user?: any, page?: number, limit?: number) {
+        return ShopUserService.getAllShopUsers(user, search, page, limit);
     },
 
     async getShopUserById(id: string, user: any) {
@@ -35,12 +52,13 @@ export const ShopUserService = {
             email: item.email,
             contactNumber: item.contactNumber,
             address: item.address,
+            image: item.image,
             createdAt: item.createdAt?.toString()
         };
     },
 
     async registerShopUser(input: any = {}) {
-        const { shopName, ownerName, email, password, contactNumber, address, gstNumber } = input;
+        const { shopName, ownerName, email, password, contactNumber, address, gstNumber, image } = input;
 
         if (!password) {
             throw new Error("Password is required");
@@ -63,6 +81,7 @@ export const ShopUserService = {
             password: hashedPassword,
             contactNumber,
             address,
+            image,
             createdAt: new Date()
         });
 
@@ -76,6 +95,7 @@ export const ShopUserService = {
                 email: newUser.email,
                 contactNumber: newUser.contactNumber,
                 address: newUser.address,
+                image: newUser.image,
                 createdAt: newUser.createdAt?.toString(),
             },
             token,
@@ -110,6 +130,7 @@ export const ShopUserService = {
                 email: user.email,
                 contactNumber: user.contactNumber,
                 address: user.address,
+                image: user.image,
                 createdAt: user.createdAt?.toString(),
             },
             token
@@ -129,6 +150,7 @@ export const ShopUserService = {
             email: updatedUser.email,
             contactNumber: updatedUser.contactNumber,
             address: updatedUser.address,
+            image: updatedUser.image,
             createdAt: updatedUser.createdAt?.toString(),
         };
     },
