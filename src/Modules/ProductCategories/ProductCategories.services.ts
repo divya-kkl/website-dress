@@ -13,7 +13,7 @@ export const ProductCategoryService = {
             };
         }
         
-        let query = productCategoryMOdel.find(filter).sort({ createdTime: -1 });
+        let query = productCategoryMOdel.find(filter).sort({ createdTime: 1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
