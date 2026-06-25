@@ -1,8 +1,8 @@
 import { productCategoryMOdel } from "../../DB/MongoDB/ProductCategories/ProductCategories.js";
 
 export const ProductCategoryService = {
-    async getAllProductCategories(search?: string) {
-        let filter = {};
+    async getAllProductCategories(search?: string, page?: number, limit?: number) {
+        let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
             filter = {
@@ -12,7 +12,13 @@ export const ProductCategoryService = {
                 ]
             };
         }
-        const categories = await productCategoryMOdel.find(filter);
+        
+        let query = productCategoryMOdel.find(filter).sort({ createdTime: -1 });
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const categories = await query;
         return categories.map((category) => ({
             id: category._id,
             name: category.name,
@@ -25,8 +31,22 @@ export const ProductCategoryService = {
         }));
     },
 
-    async getProductCategories(search?: string) {
-        return ProductCategoryService.getAllProductCategories(search);
+    async getTotalProductCategoriesCount(search?: string) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { name: { $regex: regex } },
+                    { code: { $regex: regex } },
+                ]
+            };
+        }
+        return await productCategoryMOdel.countDocuments(filter);
+    },
+
+    async getProductCategories(search?: string, page?: number, limit?: number) {
+        return ProductCategoryService.getAllProductCategories(search, page, limit);
     },
 
     async getProductCategoryById(id: string) {

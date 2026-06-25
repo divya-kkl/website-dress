@@ -3,13 +3,16 @@ import { UserService } from "./User.services.js";
 export const UserResolver = {
     Query: {
         getAllUser: async (_: any, __: any, context: any) => {
-            return UserService.getAllUsers(__.search);
+            return UserService.getAllUsers(__.search, __.page, __.limit);
         },
-        getUserById: async (_: any, __: any, context: any) => {
+        getTotalUserCount: async (_: any, __: any, context: any) => {
+            return UserService.getTotalUserCount(__.search);
+        },
+        getUserById: async (_: any, { id }: any, context: any) => {
             return UserService.getUserById(__.id);
         },
         getUser: async (_: any, __: any, context: any) => {
-            return UserService.getAllUsers(__.search);
+            return UserService.getAllUsers(__.search, __.page, __.limit);
         }
     },
     Mutation: {
@@ -18,6 +21,12 @@ export const UserResolver = {
         },
         loginUser: async (_: any, __: any, context: any) => {
             return UserService.loginUser(__.input);
+        },
+        updateUser: async (_: any, __: any, context: any) => {
+            return UserService.updateUser(__.id, __.input);
+        },
+        deleteUser: async (_: any, __: any, context: any) => {
+            return UserService.deleteUser(__.id);
         },
     }
 };

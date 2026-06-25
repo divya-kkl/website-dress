@@ -43,8 +43,8 @@ const formatCart = async (cart: any) => {
 
 export const CartService = {
 
-    async getAllCarts(search?: string) {
-        let filter = {};
+    async getAllCarts(search?: string, page?: number, limit?: number) {
+        let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
             filter = {
@@ -54,12 +54,18 @@ export const CartService = {
                 ]
             };
         }
-        const carts = await cartModel.find(filter);
+        
+        let query = cartModel.find(filter);
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const carts = await query;
         return Promise.all(carts.map(cart => formatCart(cart)));
     },
 
-    async getCart(search?: string) {
-        return CartService.getAllCarts(search);
+    async getCart(search?: string, page?: number, limit?: number) {
+        return CartService.getAllCarts(search, page, limit);
     },
 
     async getCartById(id: string) {
@@ -84,8 +90,12 @@ export const CartService = {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             cart = await cartModel.create({ userId, shopId, products: [], status: "ACTIVE" });
-        } else if (shopId && cart.shopId !== shopId) {
-            cart.shopId = shopId;
+        } else {
+            if (shopId && cart.shopId !== shopId) {
+                cart.shopId = shopId;
+            }
+            // Always ensure the cart becomes ACTIVE when adding new items
+            cart.status = "ACTIVE";
         }
 
         const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId);
@@ -119,6 +129,7 @@ export const CartService = {
             throw new Error("Cart not found");
         }
         cart.products = [];
+        cart.status = "ACTIVE";
         await cart.save();
         return "Cart cleared successfully";
     }

@@ -84,13 +84,16 @@ export const OrderType = gql`
   }
 
   type Query {
-    getAllOrders: [Order]
+    getAllOrders(search: String, page: Int, limit: Int): [Order]
+    getTotalOrdersCount(search: String): Int
     getOrderById(id: ID!): Order
-    getOrder(search: String): [Order]
+    getOrder(search: String, page: Int, limit: Int): [Order]
+    getUserAddresses: [DeliveryAddress!]!
   }
 
   type Mutation {
     placeOrder(input: PlaceOrderInput!): Order!
+    updateOrderStatus(id: ID!, status: String!, image: String): Order!
     deleteOrder(id: ID!): String!
   }
 `;

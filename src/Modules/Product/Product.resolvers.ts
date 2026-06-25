@@ -3,13 +3,22 @@ import { ProductService } from "./Product.services.js";
 export const ProductResolver = {
     Query: {
         getAllProducts: async (_: any, __: any, context: any) => {
-            return ProductService.getAllProducts(__.search);
+            return ProductService.getAllProducts(__.search, __.page, __.limit);
+        },
+        getTotalProductsCount: async (_: any, __: any, context: any) => {
+            return ProductService.getTotalProductsCount(__.search);
         },
         getProductById: async (_: any, __: any, context: any) => {
             return ProductService.getProductById(__.id);
         },
         getProduct: async (_: any, __: any, context: any) => {
-            return ProductService.getAllProducts(__.search);
+            return ProductService.getAllProducts(__.search, __.page, __.limit);
+        },
+        getProductsByCategoryCode: async (_: any, __: any, context: any) => {
+            return ProductService.getProductsByCategoryCode(__.code, __.search, __.page, __.limit);
+        },
+        getCategoryFilters: async (_: any, __: any, context: any) => {
+            return ProductService.getCategoryFilters(__.code);
         }
     },
     Mutation: {
@@ -21,6 +30,9 @@ export const ProductResolver = {
         },
         deleteProduct: async (_: any, __: any, context: any) => {
             return ProductService.deleteProduct(__.id);
+        },
+        addProductSize: async (_: any, __: any, context: any) => {
+            return ProductService.addProductSize(__.productId, __.input);
         }
     }
 };

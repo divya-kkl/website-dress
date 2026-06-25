@@ -3,13 +3,13 @@ import { CartService } from "./Cart.services.js";
 export const CartResolver = {
     Query: {
         getAllCarts: async (_: any, __: any, context: any) => {
-            return CartService.getAllCarts(__.search);
+            return CartService.getAllCarts(__.search, __.page, __.limit);
         },
         getCartById: async (_: any, __: any, context: any) => {
             return CartService.getCartById(__.id);
         },
         getCart: async (_: any, __: any, context: any) => {
-            return CartService.getAllCarts(__.search);
+            return CartService.getAllCarts(__.search, __.page, __.limit);
         },
         getCartByUserId: async (_: any, __: any, context: any) => {
             return CartService.getCartByUserId(__.userId);

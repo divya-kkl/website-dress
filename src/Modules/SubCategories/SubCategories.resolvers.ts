@@ -3,13 +3,13 @@ import { SubCategoryService } from "./SubCategories.services.js";
 export const SubCategoryResolver = {
     Query: {
         getAllSubCategories: async (_: any, __: any, context: any) => {
-            return SubCategoryService.getAllSubCategories(__.search);
+            return SubCategoryService.getAllSubCategories(__.search, __.page, __.limit);
         },
         getSubCategoryById: async (_: any, __: any, context: any) => {
             return SubCategoryService.getSubCategoryById(__.id);
         },
         getSubCategory: async (_: any, __: any, context: any) => {
-            return SubCategoryService.getAllSubCategories(__.search);
+            return SubCategoryService.getAllSubCategories(__.search, __.page, __.limit);
         }
     },
     Mutation: {

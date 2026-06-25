@@ -8,6 +8,7 @@ export interface IShopUser extends Document {
     contactNumber: string,
     address?: string,
     gstNumber?: string,
+    image: string,
     createdAt?: Date,
 }
 
@@ -37,6 +38,9 @@ const ShopUserSchema = new Schema<IShopUser>({
         type: String
     },
     gstNumber: {
+        type: String
+    },
+    image: {
         type: String
     },
     createdAt: {

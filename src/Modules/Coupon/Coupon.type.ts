@@ -36,9 +36,9 @@ export const CouponType = gql`
   }
 
   type Query {
-    getAllCoupons: [Coupon]
+    getAllCoupons(search: String, page: Int, limit: Int): [Coupon]
     getCouponById(id: ID!): Coupon
-    getCoupon(search: String): [Coupon]
+    getCoupon(search: String, page: Int, limit: Int): [Coupon]
     getCouponByCode(code: String!): Coupon
   }
 

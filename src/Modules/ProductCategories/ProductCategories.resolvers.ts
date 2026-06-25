@@ -5,13 +5,16 @@ import { SubCategoryService } from "../SubCategories/SubCategories.services.js";
 export const ProductCategoryResolver = {
     Query: {
         getAllProductCategories: async (_: any, __: any, context: any) => {
-            return ProductCategoryService.getAllProductCategories(__.search);
+            return ProductCategoryService.getAllProductCategories(__.search, __.page, __.limit);
         },
-        getProductCategoryById: async (_: any, __: any, context: any) => {
+        getTotalProductCategoriesCount: async (_: any, __: any, context: any) => {
+            return ProductCategoryService.getTotalProductCategoriesCount(__.search);
+        },
+        getProductCategoryById: async (_: any, { id }: any, context: any) => {
             return ProductCategoryService.getProductCategoryById(__.id);
         },
         getProductCategories: async (_: any, __: any, context: any) => {
-            return ProductCategoryService.getAllProductCategories(__.search);
+            return ProductCategoryService.getAllProductCategories(__.search, __.page, __.limit);
         }
     },
     Mutation: {
