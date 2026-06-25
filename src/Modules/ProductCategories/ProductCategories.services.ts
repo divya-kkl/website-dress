@@ -98,6 +98,16 @@ export const ProductCategoryService = {
     },
 
     async deleteProductCategory(id: string) {
+        // Check if any products are associated with this category
+        const { productModel } = await import("../../DB/MongoDB/Product/Product.js");
+        const productsCount = await productModel.countDocuments({
+            productCategoriesID: id
+        });
+
+        if (productsCount > 0) {
+            throw new Error("Cannot delete category. Please delete all products associated with this category first.");
+        }
+
         const deletedCategory = await productCategoryMOdel.findByIdAndDelete(id);
         if (!deletedCategory) {
             throw new Error("Product Category not found");

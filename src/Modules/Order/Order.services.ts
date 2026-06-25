@@ -2,6 +2,7 @@ import { OrderModel } from "../../DB/MongoDB/Order/Order.js";
 import { cartModel } from "../../DB/MongoDB/Cart/Cart.js";
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 import { userModel } from "../../DB/MongoDB/User/User.js";
+import mongoose from "mongoose";
 
 export const OrderService = {
     async getAllOrders(search?: string, page?: number, limit?: number) {
@@ -14,6 +15,9 @@ export const OrderService = {
                     { status: { $regex: regex } }
                 ]
             };
+            if (mongoose.Types.ObjectId.isValid(search)) {
+                filter.$or.push({ userId: search });
+            }
         }
         let query = OrderModel.find(filter).populate("shopDetails").sort({ createdAt: -1 });
         if (page && limit) {
@@ -56,6 +60,9 @@ export const OrderService = {
                     { status: { $regex: regex } }
                 ]
             };
+            if (mongoose.Types.ObjectId.isValid(search)) {
+                filter.$or.push({ userId: search });
+            }
         }
         return await OrderModel.countDocuments(filter);
     },
