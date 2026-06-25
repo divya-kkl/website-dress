@@ -15,7 +15,7 @@ export const ProductResolver = {
             return ProductService.getAllProducts(__.search, __.page, __.limit);
         },
         getProductsByCategoryCode: async (_: any, __: any, context: any) => {
-            return ProductService.getProductsByCategoryCode(__.code, __.search, __.page, __.limit);
+            return ProductService.getProductsByCategoryCode(__.code, __.search, __.page, __.limit, __.sort);
         },
         getCategoryFilters: async (_: any, __: any, context: any) => {
             return ProductService.getCategoryFilters(__.code);

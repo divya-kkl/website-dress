@@ -15,6 +15,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]!
     brand: String!
+    isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
     productCategories: ProductCategory
@@ -45,6 +46,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]!
     brand: String!
+    isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!
     variants: [VariantInput]!
@@ -66,6 +68,7 @@ export const ProductType = gql`
     discountPercentage: Float
     images: [String]
     brand: String
+    isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
     variants: [VariantInput]
@@ -113,7 +116,7 @@ export const ProductType = gql`
     getTotalProductsCount(search: String): Int
     getProductById(id: ID!): Product
     getProduct(search: String, page: Int, limit: Int): [Product]
-    getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int): CategoryProductsResponse
+    getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String): CategoryProductsResponse
     getCategoryFilters(code: String!): CategoryFilters
   }
 
@@ -122,5 +125,9 @@ export const ProductType = gql`
     updateProduct(id: ID!, input: UpdateProductInput!): Product!
     deleteProduct(id: ID!): String!
     addProductSize(productId: ID!, input: VariantInput!): Product!
+    deleteProduct(id: ID!): String!
+addProductSize(productId: ID!, input: VariantInput!): Product!
   }
+
+
 `;

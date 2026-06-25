@@ -28,6 +28,7 @@ export const ProductService = {
             discountPercentage: product.discountPercentage,
             images: product.images,
             brand: product.brand,
+            isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
@@ -64,7 +65,7 @@ export const ProductService = {
         return ProductService.getAllProducts(search, page, limit);
     },
 
-    async getProductsByCategoryCode(code: string, search?: string, page?: number, limit?: number) {
+    async getProductsByCategoryCode(code: string, search?: string, page?: number, limit?: number, sort?: string) {
         // First find the category by code
         const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
@@ -95,7 +96,33 @@ export const ProductService = {
             };
         }
 
-        let query = productModel.find(filter).populate("productCategoriesID").sort({ createdAt: -1 });
+        let sortOption: any = { createdAt: -1 };
+        if (sort) {
+            switch (sort) {
+                case 'price-low':
+                    sortOption = { price: 1 };
+                    break;
+                case 'price-high':
+                    sortOption = { price: -1 };
+                    break;
+                case 'atoz':
+                    sortOption = { name: 1 };
+                    break;
+                case 'ztoa':
+                    sortOption = { name: -1 };
+                    break;
+                case 'features':
+                    sortOption = { isFeatured: -1, createdAt: -1 };
+                    break;
+                case 'bestselling':
+                case 'most-relevant':
+                default:
+                    sortOption = { createdAt: -1 };
+                    break;
+            }
+        }
+
+        let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
@@ -109,6 +136,7 @@ export const ProductService = {
             discountPercentage: product.discountPercentage,
             images: product.images,
             brand: product.brand,
+            isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
@@ -201,6 +229,7 @@ export const ProductService = {
             discountPercentage: product.discountPercentage,
             images: product.images,
             brand: product.brand,
+            isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
             productCategories: product.productCategoriesID,
@@ -236,6 +265,7 @@ export const ProductService = {
             discountPercentage: newProduct.discountPercentage,
             images: newProduct.images,
             brand: newProduct.brand,
+            isFeatured: newProduct.isFeatured,
             productCategoriesID: (newProduct.productCategoriesID as any)?._id?.toString() || newProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (newProduct.productCategoriesID as any)?.code || "",
             productCategories: newProduct.productCategoriesID,
@@ -278,6 +308,7 @@ export const ProductService = {
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
             brand: updatedProduct.brand,
+            isFeatured: updatedProduct.isFeatured,
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
@@ -324,6 +355,7 @@ export const ProductService = {
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
             brand: updatedProduct.brand,
+            isFeatured: updatedProduct.isFeatured,
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
             productCategories: updatedProduct.productCategoriesID,
