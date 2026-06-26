@@ -38,7 +38,7 @@ export const ProductCategoryType = gql`
 
   type Query {
     getAllProductCategories(search: String, page: Int, limit: Int): ProductCategoryResponse
-    getTotalProductCategoriesCount(search: String): Int
+
     getProductCategoryById(id: ID!): ProductCategory
     getProductCategories(search: String, page: Int, limit: Int): ProductCategoryResponse
   }

@@ -5,9 +5,7 @@ export const OrderResolver = {
         getAllOrders: async (_: any, __: any, context: any) => {
             return OrderService.getAllOrders(__.search, __.page, __.limit);
         },
-        getTotalOrdersCount: async (_: any, __: any, context: any) => {
-            return OrderService.getTotalOrdersCount(__.search);
-        },
+
         getOrderById: async (_: any, { id }: any, context: any) => {
             return OrderService.getOrderById(id);
         },

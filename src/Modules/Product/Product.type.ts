@@ -132,7 +132,7 @@ export const ProductType = gql`
 
   type Query {
     getAllProducts(search: String, page: Int, limit: Int, filters: ProductFilterInput): ProductResponse
-    getTotalProductsCount(search: String): Int
+
     getProductById(id: ID!): Product
     getProduct(search: String, page: Int, limit: Int): ProductResponse
     getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse

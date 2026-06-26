@@ -7,9 +7,7 @@ export const ProductCategoryResolver = {
         getAllProductCategories: async (_: any, __: any, context: any) => {
             return ProductCategoryService.getAllProductCategories(__.search, __.page, __.limit);
         },
-        getTotalProductCategoriesCount: async (_: any, __: any, context: any) => {
-            return ProductCategoryService.getTotalProductCategoriesCount(__.search);
-        },
+
         getProductCategoryById: async (_: any, { id }: any, context: any) => {
             return ProductCategoryService.getProductCategoryById(id);
         },

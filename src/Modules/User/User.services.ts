@@ -47,20 +47,7 @@ export const UserService = {
         };
     },
 
-    async getTotalUserCount(search?: string) {
-        let filter: any = {};
-        if (search) {
-            const regex = new RegExp(search, 'i');
-            filter = {
-                $or: [
-                    { username: { $regex: regex } },
-                    { email: { $regex: regex } },
-                    { phone_number: { $regex: regex } }
-                ]
-            };
-        }
-        return await userModel.countDocuments(filter);
-    },
+
 
     async getUser(search?: string, page?: number, limit?: number) {
         return UserService.getAllUsers(search, page, limit);

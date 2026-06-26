@@ -15,7 +15,7 @@ export const ProductService = {
 
         if (filters) {
             const andConditions: any[] = [];
-            
+
             if (filters.sizes && filters.sizes.length > 0) {
                 andConditions.push({ "variants.size": { $in: filters.sizes } });
             }
@@ -107,19 +107,7 @@ export const ProductService = {
         };
     },
 
-    async getTotalProductsCount(search?: string) {
-        let filter: any = {};
-        if (search) {
-            const regex = new RegExp(search, 'i');
-            filter = {
-                $or: [
-                    { name: { $regex: regex } },
-                    { brand: { $regex: regex } },
-                ]
-            };
-        }
-        return await productModel.countDocuments(filter);
-    },
+
 
     async getProduct(search?: string, page?: number, limit?: number) {
         return ProductService.getAllProducts(search, page, limit);
@@ -158,7 +146,7 @@ export const ProductService = {
 
         if (filters) {
             const andConditions: any[] = [];
-            
+
             if (filters.sizes && filters.sizes.length > 0) {
                 andConditions.push({ "variants.size": { $in: filters.sizes } });
             }
@@ -222,6 +210,8 @@ export const ProductService = {
             }
         }
 
+        const totalCount = await productModel.countDocuments(filter);
+        
         let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
         if (page && limit) {
             const skip = (page - 1) * limit;
@@ -258,15 +248,16 @@ export const ProductService = {
 
         return {
             products: mappedProducts,
-            filters: categoryFilters
+            filters: categoryFilters,
+            totalCount
         };
     },
 
     async getCategoryFilters(code: string) {
         const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
-        
-        let filter: any = { 
+
+        let filter: any = {
             $or: [
                 { productCategoriesCode: { $regex: new RegExp(`^${code}$`, 'i') } }
             ]
@@ -308,9 +299,9 @@ export const ProductService = {
         if (maxPrice === -Infinity) maxPrice = 0;
 
         return {
-            sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a,b) => b.count - a.count),
-            colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a,b) => b.count - a.count),
-            brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a,b) => b.count - a.count),
+            sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
+            colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
+            brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
             price: { min: minPrice, max: maxPrice }
         };
@@ -440,13 +431,13 @@ export const ProductService = {
         if (!product) {
             throw new Error("Product not found");
         }
-        
+
         // Add the new variant
         product.variants.push(input);
-        
+
         let updatedProduct = await product.save();
         updatedProduct = await updatedProduct.populate("productCategoriesID");
-        
+
         return {
             id: updatedProduct._id,
             name: updatedProduct.name,

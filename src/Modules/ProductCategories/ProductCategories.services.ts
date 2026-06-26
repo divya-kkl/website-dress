@@ -37,19 +37,7 @@ export const ProductCategoryService = {
         };
     },
 
-    async getTotalProductCategoriesCount(search?: string) {
-        let filter: any = {};
-        if (search) {
-            const regex = new RegExp(search, 'i');
-            filter = {
-                $or: [
-                    { name: { $regex: regex } },
-                    { code: { $regex: regex } },
-                ]
-            };
-        }
-        return await productCategoryMOdel.countDocuments(filter);
-    },
+
 
     async getProductCategories(search?: string, page?: number, limit?: number) {
         return ProductCategoryService.getAllProductCategories(search, page, limit);
