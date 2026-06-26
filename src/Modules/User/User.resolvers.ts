@@ -8,7 +8,7 @@ export const UserResolver = {
         getTotalUserCount: async (_: any, __: any, context: any) => {
             return UserService.getTotalUserCount(__.search);
         },
-        getUserById: async (_: any, { id }: any, context: any) => {
+        getUserById: async (_: any, __: any, context: any) => {
             return UserService.getUserById(__.id);
         },
         getUser: async (_: any, __: any, context: any) => {

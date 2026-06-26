@@ -101,6 +101,20 @@ export const UserService = {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        const initialAddress = {
+            firstName: username,
+            lastName: "",
+            address: address || "",
+            city: city || "",
+            state: state || "",
+            pincode: pincode || "",
+            country: country || "",
+            phone: phone_number || "",
+            isDefault: true
+        };
+
+        const hasAddressInfo = address || city || state || pincode || country;
+
         const newUser = await userModel.create({
             username,
             email,
@@ -112,6 +126,7 @@ export const UserService = {
             phone_number,
             pincode,
             gender,
+            addresses: hasAddressInfo ? [initialAddress] : [],
             createdTime: new Date().toString(),
         });
 
