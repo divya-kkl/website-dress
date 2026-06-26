@@ -222,11 +222,17 @@ export const ProductService = {
             }
         }
 
+        const totalCount = await productModel.countDocuments(filter);
+
         let query = productModel.find(filter).populate("productCategoriesID").sort(sortOption);
+        
+        let hasMore = false;
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
+            hasMore = (skip + limit) < totalCount;
         }
+
         const products = await query;
         const mappedProducts = products.map((product) => ({
             id: product._id,
@@ -258,7 +264,9 @@ export const ProductService = {
 
         return {
             products: mappedProducts,
-            filters: categoryFilters
+            filters: categoryFilters,
+            totalCount,
+            hasMore
         };
     },
 

@@ -109,6 +109,8 @@ export const ProductType = gql`
   type CategoryProductsResponse {
     products: [Product]!
     filters: CategoryFilters!
+    totalCount: Int
+    hasMore: Boolean
   }
 
   input PriceRangeInput {
