@@ -111,12 +111,31 @@ export const ProductType = gql`
     filters: CategoryFilters!
   }
 
+  input PriceRangeInput {
+    min: Float
+    max: Float
+  }
+
+  input ProductFilterInput {
+    sizes: [String]
+    colors: [String]
+    brands: [String]
+    stock: [String]
+    price: PriceRangeInput
+  }
+
+  type ProductResponse {
+    products: [Product]
+    totalCount: Int
+    categories: [ProductCategory]
+  }
+
   type Query {
-    getAllProducts(search: String, page: Int, limit: Int): [Product]
+    getAllProducts(search: String, page: Int, limit: Int, filters: ProductFilterInput): ProductResponse
     getTotalProductsCount(search: String): Int
     getProductById(id: ID!): Product
-    getProduct(search: String, page: Int, limit: Int): [Product]
-    getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String): CategoryProductsResponse
+    getProduct(search: String, page: Int, limit: Int): ProductResponse
+    getProductsByCategoryCode(code: String!, search: String, page: Int, limit: Int, sort: String, filters: ProductFilterInput): CategoryProductsResponse
     getCategoryFilters(code: String!): CategoryFilters
   }
 

@@ -83,11 +83,15 @@ input UpdateUserInput {
     email: String!
     password: String!
 }
+    type UserResponse {
+        users: [User]
+        totalCount: Int
+    }
     type Query {
-    getAllUser(search: String, page: Int, limit: Int): [User]
+    getAllUser(search: String, page: Int, limit: Int): UserResponse
     getTotalUserCount(search: String): Int
     getUserById(id: ID!): User
-    getUser(search: String, page: Int, limit: Int): [User]
+    getUser(search: String, page: Int, limit: Int): UserResponse
 }
     
     type Mutation {

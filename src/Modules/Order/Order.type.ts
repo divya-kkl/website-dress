@@ -83,11 +83,16 @@ export const OrderType = gql`
     couponCode: String
   }
 
+  type OrderResponse {
+    orders: [Order]
+    totalCount: Int
+  }
+
   type Query {
-    getAllOrders(search: String, page: Int, limit: Int): [Order]
+    getAllOrders(search: String, page: Int, limit: Int): OrderResponse
     getTotalOrdersCount(search: String): Int
     getOrderById(id: ID!): Order
-    getOrder(search: String, page: Int, limit: Int): [Order]
+    getOrder(search: String, page: Int, limit: Int): OrderResponse
     getUserAddresses: [DeliveryAddress!]!
   }
 

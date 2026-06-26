@@ -3,7 +3,7 @@ import { ProductService } from "./Product.services.js";
 export const ProductResolver = {
     Query: {
         getAllProducts: async (_: any, __: any, context: any) => {
-            return ProductService.getAllProducts(__.search, __.page, __.limit);
+            return ProductService.getAllProducts(__.search, __.page, __.limit, __.filters);
         },
         getTotalProductsCount: async (_: any, __: any, context: any) => {
             return ProductService.getTotalProductsCount(__.search);
@@ -15,7 +15,7 @@ export const ProductResolver = {
             return ProductService.getAllProducts(__.search, __.page, __.limit);
         },
         getProductsByCategoryCode: async (_: any, __: any, context: any) => {
-            return ProductService.getProductsByCategoryCode(__.code, __.search, __.page, __.limit, __.sort);
+            return ProductService.getProductsByCategoryCode(__.code, __.search, __.page, __.limit, __.sort, __.filters);
         },
         getCategoryFilters: async (_: any, __: any, context: any) => {
             return ProductService.getCategoryFilters(__.code);

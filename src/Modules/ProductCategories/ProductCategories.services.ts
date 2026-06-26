@@ -13,13 +13,14 @@ export const ProductCategoryService = {
             };
         }
         
+        let totalCount = await productCategoryMOdel.countDocuments(filter);
         let query = productCategoryMOdel.find(filter).sort({ createdTime: 1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
         }
         const categories = await query;
-        return categories.map((category) => ({
+        const categoriesList = categories.map((category) => ({
             id: category._id,
             name: category.name,
             code: category.code,
@@ -29,6 +30,11 @@ export const ProductCategoryService = {
             parentCategoryId: category.parentCategoryId?.toString(),
             createdTime: category.createdTime?.toString()
         }));
+
+        return {
+            categories: categoriesList,
+            totalCount
+        };
     },
 
     async getTotalProductCategoriesCount(search?: string) {

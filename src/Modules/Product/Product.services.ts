@@ -1,18 +1,59 @@
 import { productModel } from "../../DB/MongoDB/Product/Product.js";
 
 export const ProductService = {
-    async getAllProducts(search?: string, page?: number, limit?: number) {
+    async getAllProducts(search?: string, page?: number, limit?: number, filters?: any) {
         let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
             filter = {
                 $or: [
                     { name: { $regex: regex } },
-                    { brand: { $regex: regex } },
+                    { brand: { $regex: regex } }
                 ]
             };
         }
 
+        if (filters) {
+            const andConditions: any[] = [];
+            
+            if (filters.sizes && filters.sizes.length > 0) {
+                andConditions.push({ "variants.size": { $in: filters.sizes } });
+            }
+            if (filters.colors && filters.colors.length > 0) {
+                andConditions.push({ "variants.color": { $in: filters.colors } });
+            }
+            if (filters.brands && filters.brands.length > 0) {
+                andConditions.push({ brand: { $in: filters.brands } });
+            }
+            if (filters.stock && filters.stock.length > 0) {
+                const stockConditions = [];
+                if (filters.stock.includes("In stock")) {
+                    stockConditions.push({ "variants.stock": { $gt: 0 } });
+                }
+                if (filters.stock.includes("Out of stock")) {
+                    stockConditions.push({ "variants.stock": { $lte: 0 } });
+                }
+                if (stockConditions.length > 0) {
+                    andConditions.push({ $or: stockConditions });
+                }
+            }
+            if (filters.price && (filters.price.min > 0 || filters.price.max > 0)) {
+                const priceQuery: any = {};
+                if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
+                if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
+                andConditions.push({ price: priceQuery });
+            }
+
+            if (andConditions.length > 0) {
+                if (Object.keys(filter).length > 0) {
+                    filter = { $and: [filter, ...andConditions] };
+                } else {
+                    filter = { $and: andConditions };
+                }
+            }
+        }
+
+        let totalCount = await productModel.countDocuments(filter);
         let query = productModel.find(filter).populate("productCategoriesID").sort({ createdAt: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
@@ -20,7 +61,7 @@ export const ProductService = {
         }
 
         const products = await query;
-        return products.map((product) => ({
+        const mappedProducts = products.map((product) => ({
             id: product._id,
             name: product.name,
             price: product.price,
@@ -45,6 +86,25 @@ export const ProductService = {
             createdAt: product.createdAt?.toString(),
             updatedAt: (product as any).updatedAt?.toString()
         }));
+
+        const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
+        const categoriesRaw = await productCategoryMOdel.find().sort({ createdTime: 1 });
+        const categoriesList = categoriesRaw.map((category: any) => ({
+            id: category._id,
+            name: category.name,
+            code: category.code,
+            description: category.description,
+            imageUrl: category.imageUrl,
+            status: category.status,
+            parentCategoryId: category.parentCategoryId?.toString(),
+            createdTime: category.createdTime?.toString()
+        }));
+
+        return {
+            products: mappedProducts,
+            totalCount,
+            categories: categoriesList
+        };
     },
 
     async getTotalProductsCount(search?: string) {
@@ -65,7 +125,7 @@ export const ProductService = {
         return ProductService.getAllProducts(search, page, limit);
     },
 
-    async getProductsByCategoryCode(code: string, search?: string, page?: number, limit?: number, sort?: string) {
+    async getProductsByCategoryCode(code: string, search?: string, page?: number, limit?: number, sort?: string, filters?: any) {
         // First find the category by code
         const { productCategoryMOdel } = await import("../../DB/MongoDB/ProductCategories/ProductCategories.js");
         const category = await productCategoryMOdel.findOne({ code: { $regex: new RegExp(`^${code}$`, 'i') } });
@@ -94,6 +154,46 @@ export const ProductService = {
                     }
                 ]
             };
+        }
+
+        if (filters) {
+            const andConditions: any[] = [];
+            
+            if (filters.sizes && filters.sizes.length > 0) {
+                andConditions.push({ "variants.size": { $in: filters.sizes } });
+            }
+            if (filters.colors && filters.colors.length > 0) {
+                andConditions.push({ "variants.color": { $in: filters.colors } });
+            }
+            if (filters.brands && filters.brands.length > 0) {
+                andConditions.push({ brand: { $in: filters.brands } });
+            }
+            if (filters.stock && filters.stock.length > 0) {
+                const stockConditions = [];
+                if (filters.stock.includes("In stock")) {
+                    stockConditions.push({ "variants.stock": { $gt: 0 } });
+                }
+                if (filters.stock.includes("Out of stock")) {
+                    stockConditions.push({ "variants.stock": { $lte: 0 } }); // or no stock
+                }
+                if (stockConditions.length > 0) {
+                    andConditions.push({ $or: stockConditions });
+                }
+            }
+            if (filters.price && (filters.price.min > 0 || filters.price.max > 0)) {
+                const priceQuery: any = {};
+                if (filters.price.min >= 0) priceQuery.$gte = filters.price.min;
+                if (filters.price.max > 0) priceQuery.$lte = filters.price.max;
+                andConditions.push({ price: priceQuery });
+            }
+
+            if (andConditions.length > 0) {
+                if (filter.$and) {
+                    filter.$and.push(...andConditions);
+                } else {
+                    filter.$and = andConditions;
+                }
+            }
         }
 
         let sortOption: any = { createdAt: -1 };
@@ -154,11 +254,11 @@ export const ProductService = {
             updatedAt: (product as any).updatedAt?.toString()
         }));
 
-        const filters = await ProductService.getCategoryFilters(code);
+        const categoryFilters = await ProductService.getCategoryFilters(code);
 
         return {
             products: mappedProducts,
-            filters: filters
+            filters: categoryFilters
         };
     },
 

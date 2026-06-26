@@ -19,13 +19,14 @@ export const OrderService = {
                 filter.$or.push({ userId: search });
             }
         }
+        let totalCount = await OrderModel.countDocuments(filter);
         let query = OrderModel.find(filter).populate("shopDetails").sort({ createdAt: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
             query = query.skip(skip).limit(limit);
         }
-        const orders = await query;
-        return orders
+        const ordersResult = await query;
+        const orders = ordersResult
             .filter((item: any) => item.userId && item.orderNumber && item.createdAt)
             .map((item: any) => ({
             id: item._id,
@@ -48,6 +49,11 @@ export const OrderService = {
             createdAt: item.createdAt?.toString(),
             updatedAt: item.updatedAt?.toString(),
         }));
+        
+        return {
+            orders,
+            totalCount
+        };
     },
 
     async getTotalOrdersCount(search?: string) {

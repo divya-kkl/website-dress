@@ -9,7 +9,9 @@ import { mongoDB } from "./DB/config.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    maxAge: 86400 // Cache preflight response for 24 hours to reduce OPTIONS requests
+}));
 
 app.get("/", (req, res) => {
     res.send("server is running");

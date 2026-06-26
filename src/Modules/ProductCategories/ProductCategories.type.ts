@@ -31,11 +31,16 @@ export const ProductCategoryType = gql`
     parentCategoryId: String
   }
 
+  type ProductCategoryResponse {
+    categories: [ProductCategory]
+    totalCount: Int
+  }
+
   type Query {
-    getAllProductCategories(search: String, page: Int, limit: Int): [ProductCategory]
+    getAllProductCategories(search: String, page: Int, limit: Int): ProductCategoryResponse
     getTotalProductCategoriesCount(search: String): Int
     getProductCategoryById(id: ID!): ProductCategory
-    getProductCategories(search: String, page: Int, limit: Int): [ProductCategory]
+    getProductCategories(search: String, page: Int, limit: Int): ProductCategoryResponse
   }
 
   type Mutation {

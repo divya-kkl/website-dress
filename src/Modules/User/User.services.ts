@@ -17,6 +17,7 @@ export const UserService = {
             };
         }
         
+        let totalCount = await userModel.countDocuments(filter);
         let query = userModel.find(filter).sort({ createdTime: -1 });
         if (page && limit) {
             const skip = (page - 1) * limit;
@@ -24,8 +25,7 @@ export const UserService = {
         }
         
         const users = await query;
-
-        return users.map((item) => ({
+        const mappedUsers = users.map((item) => ({
             id: item._id,
             username: item.username,
             email: item.email,
@@ -39,7 +39,12 @@ export const UserService = {
             addresses: item.addresses,
             createdAt: item.createdTime?.toString()
 
-        }))
+        }));
+
+        return {
+            users: mappedUsers,
+            totalCount
+        };
     },
 
     async getTotalUserCount(search?: string) {
