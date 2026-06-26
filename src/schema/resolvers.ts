@@ -9,6 +9,7 @@ import { CouponResolver } from "../Modules/Coupon/Coupon.resolvers.js";
 import { SubCategoryResolver } from "../Modules/SubCategories/SubCategories.resolvers.js";
 import { AdminResolver } from "../Modules/Admin/Admin.resolvers.js";
 import { BannerResolver } from "../Modules/Banner/Banner.resolvers.js";
+import { TopBannerResolver } from "../Modules/TopBanner/TopBanner.resolvers.js";
 
 const resolversArray = [
     UserResolver,
@@ -20,7 +21,8 @@ const resolversArray = [
     CouponResolver,
     SubCategoryResolver,
     AdminResolver,
-    BannerResolver
+    BannerResolver,
+    TopBannerResolver
 ];
 
 export const resolvers = mergeResolvers(resolversArray);
