@@ -89,7 +89,7 @@ input UpdateUserInput {
     }
     type Query {
     getAllUser(search: String, page: Int, limit: Int): UserResponse
-    getTotalUserCount(search: String): Int
+
     getUserById(id: ID!): User
     getUser(search: String, page: Int, limit: Int): UserResponse
 }

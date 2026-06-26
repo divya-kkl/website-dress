@@ -56,22 +56,7 @@ export const OrderService = {
         };
     },
 
-    async getTotalOrdersCount(search?: string) {
-        let filter: any = {};
-        if (search) {
-            const regex = new RegExp(search, 'i');
-            filter = {
-                $or: [
-                    { orderNumber: { $regex: regex } },
-                    { status: { $regex: regex } }
-                ]
-            };
-            if (mongoose.Types.ObjectId.isValid(search)) {
-                filter.$or.push({ userId: search });
-            }
-        }
-        return await OrderModel.countDocuments(filter);
-    },
+
 
     async getOrder(search?: string, page?: number, limit?: number) {
         return OrderService.getAllOrders(search, page, limit);

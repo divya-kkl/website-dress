@@ -90,7 +90,7 @@ export const OrderType = gql`
 
   type Query {
     getAllOrders(search: String, page: Int, limit: Int): OrderResponse
-    getTotalOrdersCount(search: String): Int
+
     getOrderById(id: ID!): Order
     getOrder(search: String, page: Int, limit: Int): OrderResponse
     getUserAddresses: [DeliveryAddress!]!

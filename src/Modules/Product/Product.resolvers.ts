@@ -5,9 +5,7 @@ export const ProductResolver = {
         getAllProducts: async (_: any, __: any, context: any) => {
             return ProductService.getAllProducts(__.search, __.page, __.limit, __.filters);
         },
-        getTotalProductsCount: async (_: any, __: any, context: any) => {
-            return ProductService.getTotalProductsCount(__.search);
-        },
+
         getProductById: async (_: any, __: any, context: any) => {
             return ProductService.getProductById(__.id);
         },
