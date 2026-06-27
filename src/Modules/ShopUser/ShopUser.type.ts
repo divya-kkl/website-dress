@@ -42,8 +42,14 @@ export const ShopUserType = gql`
     token: String
   }
 
+  type ShopUserPaginated {
+    users: [ShopUser]
+    totalCount: Int
+  }
+
   extend type Query {
     getAllShopUsers(search: String, page: Int, limit: Int): [ShopUser]
+    getAllShopUsersPaginated(search: String, page: Int, limit: Int): ShopUserPaginated
     getShopUserById(id: ID!): ShopUser
     getShopUser(search: String, page: Int, limit: Int): [ShopUser]
   }
