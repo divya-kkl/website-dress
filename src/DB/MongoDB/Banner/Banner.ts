@@ -18,8 +18,8 @@ export interface IBanner extends Document {
 
 const BannerSchema = new Schema<IBanner>({
     backgroundImage: { type: String, required: true },
-    sideImage: { type: String, required: true },
-    sideContent: { type: String, required: true },
+    sideImage: { type: String },
+    sideContent: { type: String },
     bannerType: { type: String, enum: ['FIRST', 'SECOND', 'THIRD'], default: 'FIRST' },
     isActive: { type: Boolean, default: true },
     fontColor: { type: String, default: '#5c3516' },

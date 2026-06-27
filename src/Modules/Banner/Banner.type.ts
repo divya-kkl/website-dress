@@ -4,8 +4,8 @@ export const BannerType = gql`
   type Banner {
     id: ID!
     backgroundImage: String!
-    sideImage: String!
-    sideContent: String!
+    sideImage: String
+    sideContent: String
     bannerType: String
     isActive: Boolean
     fontColor: String
@@ -20,8 +20,8 @@ export const BannerType = gql`
 
   input BannerInput {
     backgroundImage: String!
-    sideImage: String!
-    sideContent: String!
+    sideImage: String
+    sideContent: String
     bannerType: String
     isActive: Boolean
     fontColor: String
