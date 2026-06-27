@@ -35,6 +35,43 @@ export const ShopUserService = {
         }));
     },
 
+    async getAllShopUsersPaginated(user: any, search?: string, page?: number, limit?: number) {
+        let filter: any = {};
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            filter = {
+                $or: [
+                    { shopName: { $regex: regex } },
+                    { ownerName: { $regex: regex } },
+                    { email: { $regex: regex } }
+                ]
+            };
+        }
+        let query = shopUserModel.find(filter);
+        if (page && limit) {
+            const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
+        }
+        const [users, totalCount] = await Promise.all([
+            query.exec(),
+            shopUserModel.countDocuments(filter)
+        ]);
+        
+        return {
+            users: users.map((item) => ({
+                id: item._id,
+                shopName: item.shopName,
+                ownerName: item.ownerName,
+                email: item.email,
+                contactNumber: item.contactNumber,
+                address: item.address,
+                image: item.image,
+                createdAt: item.createdAt?.toString()
+            })),
+            totalCount
+        };
+    },
+
     async getShopUser(search?: string, user?: any, page?: number, limit?: number) {
         return ShopUserService.getAllShopUsers(user, search, page, limit);
     },

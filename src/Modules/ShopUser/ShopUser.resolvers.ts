@@ -5,6 +5,9 @@ export const ShopUserResolver = {
         getAllShopUsers: async (_: any, __: any, context: any) => {
             return ShopUserService.getAllShopUsers(context.user, __.search, __.page, __.limit);
         },
+        getAllShopUsersPaginated: async (_: any, __: any, context: any) => {
+            return ShopUserService.getAllShopUsersPaginated(context.user, __.search, __.page, __.limit);
+        },
         getShopUserById: async (_: any, __: any, context: any) => {
             return ShopUserService.getShopUserById(__.id, context.user);
         },
