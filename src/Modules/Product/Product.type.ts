@@ -14,7 +14,7 @@ export const ProductType = gql`
     mrp: Float!
     discountPercentage: Float
     images: [String]!
-    brand: String!
+    brand: String
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
@@ -45,7 +45,7 @@ export const ProductType = gql`
     mrp: Float!
     discountPercentage: Float
     images: [String]!
-    brand: String!
+    brand: String
     isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!

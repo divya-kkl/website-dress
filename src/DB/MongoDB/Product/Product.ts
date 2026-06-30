@@ -12,7 +12,7 @@ export interface IProduct extends Document {
     mrp: number;
     discountPercentage: number;
     images: string[];
-    brand: string;
+    brand?: string;
     isFeatured?: boolean;
     productCategoriesID: mongoose.Types.ObjectId | string;
     variants: IVariant[];
@@ -68,8 +68,7 @@ const ProductSchema: Schema = new Schema({
         type: String
     }],
     brand: {
-        type: String,
-        required: true
+        type: String
     },
     isFeatured: {
         type: Boolean,

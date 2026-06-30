@@ -10,6 +10,7 @@ import { AdminType } from "../Modules/Admin/Admin.type.js";
 import { BannerType } from "../Modules/Banner/Banner.type.js";
 import { TopBannerType } from "../Modules/TopBanner/TopBanner.type.js";
 import { DeliveryChargerType } from "../Modules/DeliveryCharger/DeliveryCharger.type.js";
+import { BrandModuleType } from "../Modules/Brand/Brand.type.js";
 
 export const typeDefs = [
     UserType,
@@ -23,5 +24,6 @@ export const typeDefs = [
     AdminType,
     BannerType,
     TopBannerType,
-    DeliveryChargerType
+    DeliveryChargerType,
+    BrandModuleType
 ];
