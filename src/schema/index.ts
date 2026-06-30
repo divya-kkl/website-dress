@@ -9,6 +9,7 @@ import { SubCategoryType } from "../Modules/SubCategories/SubCategories.type.js"
 import { AdminType } from "../Modules/Admin/Admin.type.js";
 import { BannerType } from "../Modules/Banner/Banner.type.js";
 import { TopBannerType } from "../Modules/TopBanner/TopBanner.type.js";
+import { DeliveryChargerType } from "../Modules/DeliveryCharger/DeliveryCharger.type.js";
 
 export const typeDefs = [
     UserType,
@@ -21,5 +22,6 @@ export const typeDefs = [
     SubCategoryType,
     AdminType,
     BannerType,
-    TopBannerType
+    TopBannerType,
+    DeliveryChargerType
 ];

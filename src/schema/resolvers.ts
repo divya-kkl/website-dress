@@ -10,6 +10,7 @@ import { SubCategoryResolver } from "../Modules/SubCategories/SubCategories.reso
 import { AdminResolver } from "../Modules/Admin/Admin.resolvers.js";
 import { BannerResolver } from "../Modules/Banner/Banner.resolvers.js";
 import { TopBannerResolver } from "../Modules/TopBanner/TopBanner.resolvers.js";
+import { DeliveryChargerResolver } from "../Modules/DeliveryCharger/DeliveryCharger.resolvers.js";
 
 const resolversArray = [
     UserResolver,
@@ -22,7 +23,8 @@ const resolversArray = [
     SubCategoryResolver,
     AdminResolver,
     BannerResolver,
-    TopBannerResolver
+    TopBannerResolver,
+    DeliveryChargerResolver
 ];
 
 export const resolvers = mergeResolvers(resolversArray);
