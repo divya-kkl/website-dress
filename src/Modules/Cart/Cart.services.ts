@@ -15,6 +15,7 @@ const populateCartItems = async (items: any[]) => {
                 productName: product.name,
                 productImage: product.images?.[0] || "",
                 quantity: item.quantity,
+                size: item.size || "Default",
                 price: product.price,
                 mrp: product.mrp,
                 totalPrice: totalPrice
@@ -86,7 +87,7 @@ export const CartService = {
         return formatCart(cart);
     },
 
-    async addToCart(userId: string, shopId: string, productId: string, quantity: number) {
+    async addToCart(userId: string, shopId: string, productId: string, quantity: number, size: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             cart = await cartModel.create({ userId, shopId, products: [], status: "ACTIVE" });
@@ -98,12 +99,12 @@ export const CartService = {
             cart.status = "ACTIVE";
         }
 
-        const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId);
+        const existingItemIndex = cart.products.findIndex((item: any) => item.productId === productId && item.size === size);
         
         if (existingItemIndex > -1) {
             cart.products[existingItemIndex]!.quantity += quantity;
         } else {
-            cart.products.push({ productId, quantity });
+            cart.products.push({ productId, quantity, size });
         }
 
         await cart.save();
@@ -111,13 +112,13 @@ export const CartService = {
         return formatCart(cart);
     },
 
-    async removeFromCart(userId: string, productId: string) {
+    async removeFromCart(userId: string, productId: string, size: string) {
         let cart = await cartModel.findOne({ userId });
         if (!cart) {
             throw new Error("Cart not found");
         }
 
-        cart.products = cart.products.filter((item: any) => item.productId !== productId);
+        cart.products = cart.products.filter((item: any) => !(item.productId === productId && item.size === size));
         await cart.save();
 
         return formatCart(cart);

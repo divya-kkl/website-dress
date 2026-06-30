@@ -153,6 +153,19 @@ export const OrderService = {
                 throw new Error(`Product not found for id: ${cartProduct.productId}`);
             }
 
+            // Deduct stock from the specific variant matching the cart's selected size
+            if (product.variants && product.variants.length > 0) {
+                const cartSize = (cartProduct as any).size;
+                const variantIndex = product.variants.findIndex(v => v.size === cartSize);
+                if (variantIndex > -1 && product.variants[variantIndex]) {
+                    product.variants[variantIndex]!.stock = Math.max(0, product.variants[variantIndex]!.stock - cartProduct.quantity);
+                } else if (product.variants[0]) {
+                    // Fallback to first if not found
+                    product.variants[0]!.stock = Math.max(0, product.variants[0]!.stock - cartProduct.quantity);
+                }
+                await product.save();
+            }
+
             subTotal += product.price * cartProduct.quantity;
             items.push({
                 productId: product._id,
@@ -161,7 +174,7 @@ export const OrderService = {
                 mrp: product.mrp,
                 name: product.name,
                 image: product.images?.[0] || "no-image-available",
-                size: "Default"
+                size: (cartProduct as any).size || "Default"
             });
         }
 

@@ -6,6 +6,7 @@ export const CartType = gql`
     productName: String!
     productImage: String!
     quantity: Float!
+    size: String!
     price: Float!
     mrp: Float!
     totalPrice: Float!
@@ -31,8 +32,8 @@ export const CartType = gql`
   }
 
   extend type Mutation {
-    addToCart(userId: ID!, shopId: ID!, productId: ID!, quantity: Float!): Cart!
-    removeFromCart(userId: ID!, productId: ID!): Cart!
+    addToCart(userId: ID!, shopId: ID!, productId: ID!, quantity: Float!, size: String!): Cart!
+    removeFromCart(userId: ID!, productId: ID!, size: String!): Cart!
     clearCart(userId: ID!): String!
   }
 `;
