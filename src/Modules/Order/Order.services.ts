@@ -5,6 +5,7 @@ import { userModel } from "../../DB/MongoDB/User/User.js";
 import mongoose from "mongoose";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
+import { sendEmail } from "../../utils/sendEmail.js";
 dotenv.config();
 
 
@@ -207,9 +208,11 @@ export const OrderService = {
         const newOrder: any = await OrderModel.create(orderData);
         const populatedOrder: any = await OrderModel.findById(newOrder._id).populate("shopDetails");
 
+        let customerEmail = "N/A";
         try {
             const user = await userModel.findById(userId);
             if (user) {
+                if (user.email) customerEmail = user.email;
                 const deliveryAddr = input.deliveryAddress;
                 const exists = user.addresses?.some(addr => 
                     addr.phone === deliveryAddr.phone && 
@@ -243,6 +246,60 @@ export const OrderService = {
         // Clear the cart
         cart.status = "INACTIVE";
         await cart.save();
+
+        // Send order confirmation email via FormSubmit
+        try {
+            const formattedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            const itemsList = populatedOrder.items.map((item: any, index: number) => `${index + 1}. ${item.name} (${item.size}) × ${item.quantity} - ₹${item.price * item.quantity}`).join('\n');
+            const customerName = input.deliveryAddress.name || "Customer";
+            const customerPhone = input.deliveryAddress.phone || "N/A";
+            
+            const message = `Hello Admin,
+
+You have received a new order on your website.
+
+Order Details:
+----------------------------------
+Order ID: #${populatedOrder.orderNumber}
+Order Date: ${formattedDate}
+Customer: ${customerName}
+Email: ${customerEmail}
+Phone: ${customerPhone}
+
+Shipping Address:
+${input.deliveryAddress.street},
+${input.deliveryAddress.city} - ${input.deliveryAddress.state}
+
+Items Ordered:
+----------------------------------
+${itemsList}
+
+Subtotal: ₹${populatedOrder.subTotal}
+Shipping: ₹${populatedOrder.deliveryCharge || 0}
+Total Amount: ₹${populatedOrder.totalAmount}
+
+Payment Method:
+${populatedOrder.paymentMethod} (${populatedOrder.paymentStatus})
+
+Order Status:
+${populatedOrder.status}
+
+Please log in to the admin dashboard to process this order.
+
+Thank you,
+LittleRR`;
+
+            await sendEmail({
+                to: process.env.ORDER_CONFIRMATION_EMAIL as string,
+                subject: `Order Confirmation - ${populatedOrder.orderNumber}`,
+                payload: {
+                    _template: "false",
+                    Message: message
+                }
+            });
+        } catch (emailError) {
+            console.error("Failed to send order confirmation email:", emailError);
+        }
 
         return {
             id: populatedOrder._id,
