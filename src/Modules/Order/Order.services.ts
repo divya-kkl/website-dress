@@ -159,6 +159,19 @@ export const OrderService = {
                 throw new Error(`Product not found for id: ${cartProduct.productId}`);
             }
 
+            // Find matching variant by size to check stock
+            const variant = product.variants?.find(
+                (v: any) => v.size?.toLowerCase() === cartProduct.size?.toLowerCase()
+            );
+
+            if (!variant) {
+                throw new Error(`Size ${cartProduct.size} is not available for ${product.name}`);
+            }
+
+            if (variant.stock < cartProduct.quantity) {
+                throw new Error(`Only ${variant.stock} item(s) left in stock for size ${cartProduct.size} of ${product.name}`);
+            }
+
             subTotal += product.price * cartProduct.quantity;
             items.push({
                 productId: product._id,
@@ -223,6 +236,26 @@ export const OrderService = {
         };
 
         const newOrder: any = await OrderModel.create(orderData);
+
+        // Deduct stock in database if payment didn't fail
+        if (paymentStatus !== "FAILED") {
+            for (const item of items) {
+                const product = await productModel.findById(item.productId);
+                if (product) {
+                    const variant = product.variants.find(
+                        (v: any) => v.size?.toLowerCase() === item.size?.toLowerCase()
+                    );
+                    if (variant) {
+                        variant.stock = Math.max(
+                            0,
+                            variant.stock - item.quantity
+                        );
+                        await product.save();
+                    }
+                }
+            }
+        }
+
         const populatedOrder: any = await OrderModel.findById(newOrder._id).populate("shopDetails");
 
         try {
