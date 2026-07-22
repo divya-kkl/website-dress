@@ -14,7 +14,6 @@ export const ProductType = gql`
     mrp: Float!
     discountPercentage: Float
     images: [String]!
-    brand: String!
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
@@ -46,7 +45,6 @@ export const ProductType = gql`
     mrp: Float!
     discountPercentage: Float
     images: [String]!
-    brand: String!
     isFeatured: Boolean
     productCategoriesID: String!
     productCategoriesCode: String!
@@ -69,7 +67,6 @@ export const ProductType = gql`
     mrp: Float
     discountPercentage: Float
     images: [String]
-    brand: String
     isFeatured: Boolean
     productCategoriesID: String
     productCategoriesCode: String
@@ -104,7 +101,6 @@ export const ProductType = gql`
   type CategoryFilters {
     sizes: [FilterOption]!
     colors: [FilterOption]!
-    brands: [FilterOption]!
     stock: StockFilter!
     price: PriceRange!
   }
@@ -123,7 +119,6 @@ export const ProductType = gql`
   input ProductFilterInput {
     sizes: [String]
     colors: [String]
-    brands: [String]
     stock: [String]
     price: PriceRangeInput
   }

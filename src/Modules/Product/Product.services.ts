@@ -5,12 +5,7 @@ export const ProductService = {
         let filter: any = {};
         if (search) {
             const regex = new RegExp(search, 'i');
-            filter = {
-                $or: [
-                    { name: { $regex: regex } },
-                    { brand: { $regex: regex } }
-                ]
-            };
+            filter = { name: { $regex: regex } };
         }
 
         if (filters) {
@@ -21,9 +16,6 @@ export const ProductService = {
             }
             if (filters.colors && filters.colors.length > 0) {
                 andConditions.push({ "variants.color": { $in: filters.colors } });
-            }
-            if (filters.brands && filters.brands.length > 0) {
-                andConditions.push({ brand: { $in: filters.brands } });
             }
             if (filters.stock && filters.stock.length > 0) {
                 const stockConditions = [];
@@ -68,7 +60,6 @@ export const ProductService = {
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
-            brand: product.brand,
             isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
@@ -135,12 +126,7 @@ export const ProductService = {
             filter = {
                 $and: [
                     filter,
-                    {
-                        $or: [
-                            { name: { $regex: regex } },
-                            { brand: { $regex: regex } }
-                        ]
-                    }
+                    { name: { $regex: regex } }
                 ]
             };
         }
@@ -153,9 +139,6 @@ export const ProductService = {
             }
             if (filters.colors && filters.colors.length > 0) {
                 andConditions.push({ "variants.color": { $in: filters.colors } });
-            }
-            if (filters.brands && filters.brands.length > 0) {
-                andConditions.push({ brand: { $in: filters.brands } });
             }
             if (filters.stock && filters.stock.length > 0) {
                 const stockConditions = [];
@@ -232,7 +215,6 @@ export const ProductService = {
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
-            brand: product.brand,
             isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
@@ -278,7 +260,6 @@ export const ProductService = {
 
         const sizes: any = {};
         const colors: any = {};
-        const brands: any = {};
         let inStock = 0;
         let outOfStock = 0;
         let minPrice = Infinity;
@@ -292,10 +273,6 @@ export const ProductService = {
             if (p.price < minPrice) minPrice = p.price;
             if (p.price > maxPrice) maxPrice = p.price;
 
-            if (p.brand) {
-                brands[p.brand] = (brands[p.brand] || 0) + 1;
-            }
-
             p.variants?.forEach(v => {
                 if (v.size) sizes[v.size] = (sizes[v.size] || 0) + 1;
                 if (v.color) colors[v.color] = (colors[v.color] || 0) + 1;
@@ -308,7 +285,6 @@ export const ProductService = {
         return {
             sizes: Object.entries(sizes).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             colors: Object.entries(colors).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
-            brands: Object.entries(brands).map(([name, count]) => ({ name, count: count as number })).sort((a, b) => b.count - a.count),
             stock: { inStock, outOfStock },
             price: { min: minPrice, max: maxPrice }
         };
@@ -326,7 +302,6 @@ export const ProductService = {
             mrp: product.mrp,
             discountPercentage: product.discountPercentage,
             images: product.images,
-            brand: product.brand,
             isFeatured: product.isFeatured,
             productCategoriesID: (product.productCategoriesID as any)?._id?.toString() || product.productCategoriesID?.toString() || "",
             productCategoriesCode: (product.productCategoriesID as any)?.code || "",
@@ -363,7 +338,6 @@ export const ProductService = {
             mrp: newProduct.mrp,
             discountPercentage: newProduct.discountPercentage,
             images: newProduct.images,
-            brand: newProduct.brand,
             isFeatured: newProduct.isFeatured,
             productCategoriesID: (newProduct.productCategoriesID as any)?._id?.toString() || newProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (newProduct.productCategoriesID as any)?.code || "",
@@ -407,7 +381,6 @@ export const ProductService = {
             mrp: updatedProduct.mrp,
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
-            brand: updatedProduct.brand,
             isFeatured: updatedProduct.isFeatured,
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
@@ -455,7 +428,6 @@ export const ProductService = {
             mrp: updatedProduct.mrp,
             discountPercentage: updatedProduct.discountPercentage,
             images: updatedProduct.images,
-            brand: updatedProduct.brand,
             isFeatured: updatedProduct.isFeatured,
             productCategoriesID: (updatedProduct.productCategoriesID as any)?._id?.toString() || updatedProduct.productCategoriesID?.toString() || "",
             productCategoriesCode: (updatedProduct.productCategoriesID as any)?.code || "",
