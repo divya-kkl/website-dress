@@ -159,6 +159,14 @@ export const OrderService = {
                 throw new Error(`Product not found for id: ${cartProduct.productId}`);
             }
 
+            const variant = product.variants.find((v: any) => v.size === (cartProduct.size || "Default"));
+            if (!variant) {
+                 throw new Error(`Size ${cartProduct.size || 'Default'} is not available for ${product.name}`);
+            }
+            if (variant.stock < cartProduct.quantity) {
+                 throw new Error(`Product ${product.name} (Size: ${cartProduct.size || 'Default'}) is out of stock!`);
+            }
+
             subTotal += product.price * cartProduct.quantity;
             items.push({
                 productId: product._id,
@@ -224,6 +232,18 @@ export const OrderService = {
 
         const newOrder: any = await OrderModel.create(orderData);
         const populatedOrder: any = await OrderModel.findById(newOrder._id).populate("shopDetails");
+
+        for (const cartProduct of cart.products) {
+            await productModel.updateOne(
+                { 
+                    _id: cartProduct.productId, 
+                    "variants.size": cartProduct.size || "Default" 
+                },
+                { 
+                    $inc: { "variants.$.stock": -cartProduct.quantity } 
+                }
+            );
+        }
 
         try {
             const user = await userModel.findById(userId);
