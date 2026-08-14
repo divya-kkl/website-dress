@@ -1,3 +1,4 @@
+
 import { mergeResolvers } from "@graphql-tools/merge";
 import { UserResolver } from "../Modules/User/User.resolvers.js";
 import { ProductResolver } from "../Modules/Product/Product.resolvers.js";
@@ -16,6 +17,7 @@ import { PaymentMethodResolver } from "../Modules/PaymentMethod/PaymentMethod.re
 
 import { ReviewResolver } from "../Modules/Review/Review.resolvers.js";
 import { TagResolver } from "../Modules/Tag/Tag.resolvers.js";
+import { WishlistResolver } from "../Modules/Wishlist/Wishlist.resolvers.js";
 const resolversArray = [
     UserResolver,
     ProductResolver,
@@ -32,7 +34,8 @@ const resolversArray = [
     FAQResolver,
     PaymentMethodResolver,
     ReviewResolver,
-    TagResolver
+    TagResolver,
+    WishlistResolver
 ];
 
 
